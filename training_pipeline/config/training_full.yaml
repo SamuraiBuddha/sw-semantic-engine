@@ -1,0 +1,41 @@
+# SolidWorks Semantic Engine -- Training Pipeline Configuration
+# Version: 0.1.0
+# -------------------------------------------------------------------
+# This file configures the full training data generation pipeline.
+# All paths are relative to the project root unless absolute.
+# -------------------------------------------------------------------
+
+pipeline:
+  name: "sw-semantic-engine-training"
+  version: "0.1.0"
+  output_dir: "output"
+
+data_sources:
+  solidworks_api:
+    enabled: true
+    include_explain_pairs: true
+
+  gdt:
+    enabled: true
+    tolerance_values: [0.01, 0.02, 0.05, 0.1, 0.2, 0.5]
+    modifiers: ["RFS", "MMC", "LMC"]
+    include_explain_pairs: true
+
+  sketch:
+    enabled: true
+    constraint_types: "all"
+    dimension_types: ["linear", "horizontal", "vertical", "radial", "diameter"]
+    dimension_values: [5.0, 10.0, 15.0, 20.0, 25.0, 50.0, 100.0]
+    tolerance_values: [0.01, 0.05, 0.1, 0.2]
+
+  combined:
+    enabled: true
+
+export:
+  formats: ["alpaca", "jsonl"]
+  alpaca_file: "sw_training_data.json"
+  jsonl_file: "sw_training_data.jsonl"
+
+model:
+  base: "Qwen/Qwen2.5-Coder-7B"
+  adapter: "lora"

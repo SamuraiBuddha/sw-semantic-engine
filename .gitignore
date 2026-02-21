@@ -42,13 +42,19 @@ env/
 .coverage
 htmlcov/
 
-# Data
-*.json
-*.jsonl
+# Data (general)
 *.csv
 *.xlsx
 training_data/
 data/
+
+# JSON/JSONL - ignore by default but allow specific paths
+*.json
+*.jsonl
+!training_pipeline/config/*.yaml
+!output/sw_training_data.json
+!output/sw_training_data.jsonl
+!axolotl_solidworks_config.yml
 
 # Models
 *.gguf
