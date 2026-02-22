@@ -207,7 +207,7 @@ class TrainingPipeline:
         all_pairs: list[tuple[str, str]] = []
 
         # ---- Stage 1: SolidWorks API training data ---------------------
-        print("\n[->] Stage 1/4: Generating SolidWorks API training data...")
+        print("\n[->] Stage 1/7: Generating SolidWorks API training data...")
         try:
             api_pairs = self.generate_api_training_data()
             self.counts["solidworks_api"] = len(api_pairs)
@@ -220,7 +220,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 2: GD&T training data -------------------------------
-        print("\n[->] Stage 2/4: Generating GD&T training data...")
+        print("\n[->] Stage 2/7: Generating GD&T training data...")
         try:
             gdt_pairs = self.generate_gdt_training_data()
             self.counts["gdt"] = len(gdt_pairs)
@@ -233,7 +233,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 3: Sketch constraint training data ------------------
-        print("\n[->] Stage 3/4: Generating sketch constraint training data...")
+        print("\n[->] Stage 3/7: Generating sketch constraint training data...")
         try:
             sketch_pairs = self.generate_sketch_training_data()
             self.counts["sketch"] = len(sketch_pairs)
@@ -246,7 +246,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 4: Combined multi-step training data ----------------
-        print("\n[->] Stage 4/4: Generating combined multi-step training data...")
+        print("\n[->] Stage 4/7: Generating combined multi-step training data...")
         try:
             combined_pairs = self.generate_combined_training_data()
             self.counts["combined"] = len(combined_pairs)
@@ -255,6 +255,45 @@ class TrainingPipeline:
         except Exception as exc:
             self.counts["combined"] = 0
             print(f"  [FAIL] Combined data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 5: Feature code training data -------------------------
+        print("\n[->] Stage 5/7: Generating feature code training data...")
+        try:
+            feature_pairs = self.generate_feature_training_data()
+            self.counts["feature_code"] = len(feature_pairs)
+            all_pairs.extend(feature_pairs)
+            print(f"  [OK] Generated {len(feature_pairs)} feature code training pairs")
+        except Exception as exc:
+            self.counts["feature_code"] = 0
+            print(f"  [FAIL] Feature code data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 6: Drawing & configuration training data --------------
+        print("\n[->] Stage 6/7: Generating drawing & configuration training data...")
+        try:
+            drawing_config_pairs = self.generate_drawing_config_training_data()
+            self.counts["drawing_config"] = len(drawing_config_pairs)
+            all_pairs.extend(drawing_config_pairs)
+            print(f"  [OK] Generated {len(drawing_config_pairs)} drawing/config training pairs")
+        except Exception as exc:
+            self.counts["drawing_config"] = 0
+            print(f"  [FAIL] Drawing/config data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 7: Advanced training data -----------------------------
+        print("\n[->] Stage 7/7: Generating advanced training data...")
+        try:
+            advanced_pairs = self.generate_advanced_training_data()
+            self.counts["advanced"] = len(advanced_pairs)
+            all_pairs.extend(advanced_pairs)
+            print(f"  [OK] Generated {len(advanced_pairs)} advanced training pairs")
+        except Exception as exc:
+            self.counts["advanced"] = 0
+            print(f"  [FAIL] Advanced data generation failed: {exc}")
             if self.verbose:
                 traceback.print_exc()
 
@@ -1106,6 +1145,84 @@ class TrainingPipeline:
                     break
             if count3 >= 100:
                 break
+
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 5: Feature code generation
+    # ------------------------------------------------------------------
+
+    def generate_feature_training_data(self) -> list[tuple[str, str]]:
+        """Generate training pairs for SolidWorks feature operations.
+
+        Covers extrusions, revolves, sweeps, lofts, fillets, chamfers,
+        patterns, and other common feature-tree operations using the
+        FeatureCodeGenerator.
+        """
+        from training_pipeline.generators.feature_code_generator import (
+            FeatureCodeGenerator,
+        )
+
+        generator = FeatureCodeGenerator()
+        pairs = generator.generate_all()
+
+        if self.verbose:
+            print(f"    [->] FeatureCodeGenerator produced {len(pairs)} pairs")
+
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 6: Drawing & configuration code generation
+    # ------------------------------------------------------------------
+
+    def generate_drawing_config_training_data(self) -> list[tuple[str, str]]:
+        """Generate training pairs for drawing views and configuration management.
+
+        Uses DrawingCodeGenerator for drawing sheet / view operations and
+        ConfigurationCodeGenerator for design table and configuration tasks.
+        Results from both generators are combined into a single list.
+        """
+        from training_pipeline.generators.drawing_and_config_generator import (
+            DrawingCodeGenerator,
+            ConfigurationCodeGenerator,
+        )
+
+        pairs: list[tuple[str, str]] = []
+
+        drawing_gen = DrawingCodeGenerator()
+        drawing_pairs = drawing_gen.generate_all()
+        pairs.extend(drawing_pairs)
+        if self.verbose:
+            print(f"    [->] DrawingCodeGenerator produced {len(drawing_pairs)} pairs")
+
+        config_gen = ConfigurationCodeGenerator()
+        config_pairs = config_gen.generate_all()
+        pairs.extend(config_pairs)
+        if self.verbose:
+            print(f"    [->] ConfigurationCodeGenerator produced {len(config_pairs)} pairs")
+
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 7: Advanced training data generation
+    # ------------------------------------------------------------------
+
+    def generate_advanced_training_data(self) -> list[tuple[str, str]]:
+        """Generate advanced training pairs covering complex SolidWorks workflows.
+
+        Includes multi-body operations, assembly-context editing, surface
+        modelling, sheet-metal, weldments, and other advanced topics produced
+        by the AdvancedTrainingGenerator.
+        """
+        from training_pipeline.generators.advanced_training_generator import (
+            AdvancedTrainingGenerator,
+        )
+
+        generator = AdvancedTrainingGenerator()
+        pairs = generator.generate_all()
+
+        if self.verbose:
+            print(f"    [->] AdvancedTrainingGenerator produced {len(pairs)} pairs")
 
         return pairs
 
