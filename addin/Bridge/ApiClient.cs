@@ -48,7 +48,7 @@ namespace SolidWorksSemanticEngine.Bridge
         // ----- Public API Methods ------------------------------------------
 
         /// <summary>
-        /// Sends a code-generation request to <c>POST /generate</c>.
+        /// Sends a code-generation request to <c>POST /api/generate-code</c>.
         /// </summary>
         /// <param name="request">The prompt and context payload.</param>
         /// <returns>
@@ -58,16 +58,15 @@ namespace SolidWorksSemanticEngine.Bridge
         public async Task<CodeGenerationResponse> GenerateCodeAsync(CodeGenerationRequest request)
         {
             return await PostAsync<CodeGenerationRequest, CodeGenerationResponse>(
-                "/generate", request);
+                "/api/generate-code", request);
         }
 
         /// <summary>
         /// Fetches SolidWorks API reference information from
-        /// <c>GET /reference?method={methodName}</c>.
+        /// <c>GET /api/reference/{methodName}</c>.
         /// </summary>
         /// <param name="methodName">
-        /// Fully-qualified SolidWorks API method name
-        /// (e.g. <c>IModelDoc2.AddDimension</c>).
+        /// SolidWorks API method name (e.g. <c>FeatureExtrusion3</c>).
         /// </param>
         /// <returns>
         /// An <see cref="APIReferenceResponse"/> on success, or
@@ -76,22 +75,24 @@ namespace SolidWorksSemanticEngine.Bridge
         public async Task<APIReferenceResponse> GetReferenceAsync(string methodName)
         {
             return await GetAsync<APIReferenceResponse>(
-                "/reference?method=" + Uri.EscapeDataString(methodName));
+                "/api/reference/" + Uri.EscapeDataString(methodName));
         }
 
         /// <summary>
-        /// Resolves parametric values via <c>POST /parametrize</c>.
+        /// Resolves parametric values via <c>POST /api/resolve-parameters</c>.
         /// </summary>
-        /// <param name="request">The code-generation request with context.</param>
+        /// <param name="request">
+        /// The parameter space name and assignments to resolve.
+        /// </param>
         /// <returns>
         /// A <see cref="ParameterResolveResponse"/> on success, or
         /// <c>null</c> if the request fails.
         /// </returns>
         public async Task<ParameterResolveResponse> ResolveParametersAsync(
-            CodeGenerationRequest request)
+            ParameterResolveRequest request)
         {
-            return await PostAsync<CodeGenerationRequest, ParameterResolveResponse>(
-                "/parametrize", request);
+            return await PostAsync<ParameterResolveRequest, ParameterResolveResponse>(
+                "/api/resolve-parameters", request);
         }
 
         /// <summary>

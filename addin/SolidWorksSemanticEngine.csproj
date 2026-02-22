@@ -78,6 +78,9 @@
     <Compile Include="Models\APIReferenceResponse.cs" />
     <Compile Include="Models\ParameterResolveResponse.cs" />
     <Compile Include="Commands\GenerateCodeCommand.cs" />
+    <Compile Include="Commands\ParametrizeCommand.cs" />
+    <Compile Include="Commands\ExplainApiCommand.cs" />
+    <Compile Include="Models\ParameterResolveRequest.cs" />
     <Compile Include="Services\SolidWorksContextService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -151,24 +151,18 @@ namespace SolidWorksSemanticEngine
             form.Show();
         }
 
-        /// <summary>Callback: placeholder for Parametrize functionality.</summary>
+        /// <summary>Callback: opens the Parametrize dialog.</summary>
         public void OnParametrize()
         {
-            // TODO: implement parametrize dialog
-            _swApp.SendMsgToUser2(
-                "Parametrize command is not yet implemented.",
-                (int)swMessageBoxIcon_e.swMbInformation,
-                (int)swMessageBoxBtn_e.swMbOk);
+            var form = new ParametrizeCommand(ApiClient, ContextService);
+            form.Show();
         }
 
-        /// <summary>Callback: placeholder for Explain API functionality.</summary>
+        /// <summary>Callback: opens the Explain API dialog.</summary>
         public void OnExplainApi()
         {
-            // TODO: implement API reference lookup dialog
-            _swApp.SendMsgToUser2(
-                "Explain API command is not yet implemented.",
-                (int)swMessageBoxIcon_e.swMbInformation,
-                (int)swMessageBoxBtn_e.swMbOk);
+            var form = new ExplainApiCommand(ApiClient, ContextService);
+            form.Show();
         }
 
         /// <summary>Enable-method callback. Returns 1 (enabled) always.</summary>
