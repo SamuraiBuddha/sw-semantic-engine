@@ -12972,97 +12972,97 @@
   {
     "instruction": "Safely get the active document and verify it is a part.",
     "input": "",
-    "output": "ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;\nif (modelDoc == null) throw new InvalidOperationException(\"No active document.\");\nif (modelDoc.GetType() != (int)swDocumentTypes_e.swDocPART)\n    throw new InvalidOperationException(\"Active document is not a part.\");\nPartDoc partDoc = (PartDoc)modelDoc;"
+    "output": "ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;\nif (modelDoc == null) throw new InvalidOperationException(\"No active document.\");\nif (modelDoc.GetType() != (int)swDocumentTypes_e.swDocPART)\n    throw new InvalidOperationException(\"Not a part.\");\nPartDoc partDoc = (PartDoc)modelDoc;"
   },
   {
     "instruction": "Get the active document and check if it is an assembly.",
     "input": "",
-    "output": "ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;\nif (modelDoc == null || modelDoc.GetType() != (int)swDocumentTypes_e.swDocASSEMBLY)\n{ swApp.SendMsgToUser2(\"Please open an assembly.\",\n    (int)swMessageBoxIcon_e.swMbWarning, (int)swMessageBoxBtn_e.swMbOk); return; }\nAssemblyDoc assyDoc = (AssemblyDoc)modelDoc;"
+    "output": "ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;\nif (modelDoc == null || modelDoc.GetType() != (int)swDocumentTypes_e.swDocASSEMBLY)\n{ swApp.SendMsgToUser2(\"Open an assembly.\", (int)swMessageBoxIcon_e.swMbWarning,\n    (int)swMessageBoxBtn_e.swMbOk); return; }\nAssemblyDoc assyDoc = (AssemblyDoc)modelDoc;"
   },
   {
     "instruction": "Check if a boss extrude feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureExtrusion3(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create boss extrude.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureExtrusion3(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create boss extrude.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a cut extrude feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureCut4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create cut extrude.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureCut4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create cut extrude.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a revolve feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureRevolve2(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create revolve.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureRevolve2(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create revolve.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a loft feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.InsertProtrusionBlend2(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create loft.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.InsertProtrusionBlend2(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create loft.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a sweep cut feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.InsertCutSweep(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create sweep cut.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.InsertCutSweep(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create sweep cut.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a fillet feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureFillet3(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create fillet.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureFillet3(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create fillet.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a chamfer feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.InsertFeatureChamfer(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create chamfer.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.InsertFeatureChamfer(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create chamfer.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a linear pattern feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureLinearPattern4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create linear pattern.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureLinearPattern4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create linear pattern.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Check if a circular pattern feature creation succeeded.",
     "input": "",
-    "output": "Feature feat = (Feature)featMgr.FeatureCircularPattern4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create circular pattern.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);\n    modelDoc.EditUndo2(1); return; }"
+    "output": "Feature feat = (Feature)featMgr.FeatureCircularPattern4(/* params */);\nif (feat == null) { swApp.SendMsgToUser2(\"Failed to create circular pattern.\",\n    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
     "instruction": "Verify a sketch is active before adding entities.",
     "input": "",
-    "output": "if (modelDoc.GetActiveSketch2() == null) { swApp.SendMsgToUser2(\n    \"No active sketch.\", (int)swMessageBoxIcon_e.swMbWarning,\n    (int)swMessageBoxBtn_e.swMbOk); return; }"
+    "output": "if (modelDoc.GetActiveSketch2() == null) { swApp.SendMsgToUser2(\"No active sketch.\",\n    (int)swMessageBoxIcon_e.swMbWarning, (int)swMessageBoxBtn_e.swMbOk); return; }"
   },
   {
-    "instruction": "Verify that a selection succeeded before operating.",
+    "instruction": "Verify that a selection succeeded.",
     "input": "",
-    "output": "bool selected = modelDoc.Extension.SelectByID2(\"Boss-Extrude1\",\n    \"BODYFEATURE\", 0, 0, 0, false, 0, null, 0);\nif (!selected) { Debug.WriteLine(\"[FAIL] Selection failed.\"); return; }"
+    "output": "bool sel = modelDoc.Extension.SelectByID2(\"Boss-Extrude1\",\"BODYFEATURE\",0,0,0,false,0,null,0);\nif (!sel) { Debug.WriteLine(\"[FAIL] Selection failed.\"); return; }"
   },
   {
-    "instruction": "Check if inserting a component into an assembly succeeded.",
+    "instruction": "Check component insertion succeeded.",
     "input": "",
-    "output": "Component2 comp = assyDoc.AddComponent5(partPath,\n    (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,\n    \"\", false, \"\", 0, 0, 0);\nif (comp == null) { Debug.WriteLine(\"[FAIL] Insert failed.\"); return; }"
+    "output": "Component2 comp = assyDoc.AddComponent5(partPath,\n    (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,\n    \"\",false,\"\",0,0,0);\nif (comp == null) { Debug.WriteLine(\"[FAIL] Insert failed.\"); return; }"
   },
   {
-    "instruction": "Safely get a dimension value with null checking.",
+    "instruction": "Safely get a dimension value.",
     "input": "",
-    "output": "Feature feat = (Feature)modelDoc.FeatureByName(\"Boss-Extrude1\");\nif (feat == null) { Debug.WriteLine(\"[WARN] Feature not found.\"); return; }\nDisplayDimension dd = (DisplayDimension)feat.GetFirstDisplayDimension();\nif (dd == null) return;\ndouble val = ((Dimension)dd.GetDimension2(0)).SystemValue;"
+    "output": "Feature feat = (Feature)modelDoc.FeatureByName(\"Boss-Extrude1\");\nif (feat == null) return;\nDisplayDimension dd = (DisplayDimension)feat.GetFirstDisplayDimension();\nif (dd == null) return;\ndouble val = ((Dimension)dd.GetDimension2(0)).SystemValue;"
   },
   {
     "instruction": "Check if a part has solid bodies.",
     "input": "",
-    "output": "object[] bodies = (object[])((PartDoc)modelDoc).GetBodies2(\n    (int)swBodyType_e.swSolidBody, true);\nif (bodies == null || bodies.Length == 0) { Debug.WriteLine(\"[WARN] No bodies.\"); return; }"
+    "output": "object[] bodies = (object[])((PartDoc)modelDoc).GetBodies2((int)swBodyType_e.swSolidBody,true);\nif (bodies == null || bodies.Length == 0) { Debug.WriteLine(\"[WARN] No bodies.\"); return; }"
   },
   {
-    "instruction": "Safely switch to a named configuration.",
+    "instruction": "Safely switch configuration.",
     "input": "",
-    "output": "if (!modelDoc.ShowConfiguration2(configName)) {\n    string[] cfgs = (string[])modelDoc.GetConfigurationNames();\n    Debug.WriteLine(\"[FAIL] Config not found. Available: \" + string.Join(\", \", cfgs)); return; }"
+    "output": "if (!modelDoc.ShowConfiguration2(configName)) { string[] cfgs = (string[])modelDoc.GetConfigurationNames();\n    Debug.WriteLine(\"[FAIL] Not found. Available: \" + string.Join(\", \", cfgs)); return; }"
   },
   {
-    "instruction": "Check that a drawing view exists.",
+    "instruction": "Check drawing view exists.",
     "input": "",
-    "output": "View view = (View)((DrawingDoc)modelDoc).GetFirstView();\nview = (View)view.GetNextView();\nif (view == null) { Debug.WriteLine(\"[WARN] No model views.\"); return; }"
+    "output": "View v = (View)((DrawingDoc)modelDoc).GetFirstView(); v = (View)v.GetNextView();\nif (v == null) { Debug.WriteLine(\"[WARN] No model views.\"); return; }"
   },
   {
     "instruction": "Verify mate creation succeeded.",
     "input": "",
-    "output": "int mateErr = 0;\nMate2 mate = (Mate2)assyDoc.AddMate5((int)swMateType_e.swMateCOINCIDENT,\n    (int)swMateAlign_e.swMateAlignALIGNED, false, 0,0,0,0,0,0,0,0,\n    false, false, 0, out mateErr);\nif (mate == null) { Debug.WriteLine(\"[FAIL] Mate error: \" + mateErr); return; }"
+    "output": "int mateErr = 0;\nMate2 mate = (Mate2)assyDoc.AddMate5((int)swMateType_e.swMateCOINCIDENT,\n    (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0,out mateErr);\nif (mate == null) { Debug.WriteLine(\"[FAIL] Error: \" + mateErr); return; }"
   },
   {
     "instruction": "Handle COM exceptions in SolidWorks API calls.",
@@ -13082,7 +13082,7 @@
   {
     "instruction": "Interpret HRESULT codes from COMException.",
     "input": "",
-    "output": "catch (COMException comEx) {\n    switch ((uint)comEx.ErrorCode) {\n        case 0x80004005: Debug.WriteLine(\"[FAIL] E_FAIL\"); break;\n        case 0x80070005: Debug.WriteLine(\"[FAIL] ACCESS_DENIED\"); break;\n        case 0x8001010A: Debug.WriteLine(\"[WARN] Busy -- retry\"); break;\n        default: Debug.WriteLine(\"[FAIL] 0x\" + comEx.ErrorCode.ToString(\"X\")); break;\n    } }"
+    "output": "catch (COMException cx) { switch ((uint)cx.ErrorCode) {\n    case 0x80004005: Debug.WriteLine(\"[FAIL] E_FAIL\"); break;\n    case 0x80070005: Debug.WriteLine(\"[FAIL] ACCESS_DENIED\"); break;\n    case 0x8001010A: Debug.WriteLine(\"[WARN] Busy\"); break;\n    default: Debug.WriteLine(\"[FAIL] 0x\"+cx.ErrorCode.ToString(\"X\")); break; } }"
   },
   {
     "instruction": "Safely dispose of a selection set.",
@@ -13107,7 +13107,7 @@
   {
     "instruction": "Implement IMessageFilter for COM retry.",
     "input": "",
-    "output": "[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown),\n Guid(\"00000016-0000-0000-C000-000000000046\")]\ninterface IMessageFilter {\n    [PreserveSig] int HandleInComingCall(int dwCallType, IntPtr hTaskCaller, int dwTickCount, IntPtr lpInterfaceInfo);\n    [PreserveSig] int RetryRejectedCall(IntPtr hTaskCallee, int dwTickCount, int dwRejectType);\n    [PreserveSig] int MessagePending(IntPtr hTaskCallee, int dwTickCount, int dwPendingType);\n}"
+    "output": "[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid(\"00000016-0000-0000-C000-000000000046\")]\ninterface IMessageFilter {\n    [PreserveSig] int HandleInComingCall(int a, IntPtr b, int c, IntPtr d);\n    [PreserveSig] int RetryRejectedCall(IntPtr a, int b, int c);\n    [PreserveSig] int MessagePending(IntPtr a, int b, int c); }"
   },
   {
     "instruction": "Wrap operations in COM-safe try/finally.",
@@ -13127,7 +13127,7 @@
   {
     "instruction": "Using-pattern wrapper for COM lifetime.",
     "input": "",
-    "output": "public class ComRef<T> : IDisposable where T : class {\n    public T Obj { get; private set; }\n    public ComRef(T obj) { Obj = obj; }\n    public void Dispose() { if (Obj != null) { Marshal.ReleaseComObject(Obj); Obj = null; } }\n}"
+    "output": "public class ComRef<T> : IDisposable where T : class {\n    public T Obj { get; private set; } public ComRef(T o) { Obj = o; }\n    public void Dispose() { if (Obj!=null) { Marshal.ReleaseComObject(Obj); Obj=null; } } }"
   },
   {
     "instruction": "Handle COM timeout during large rebuild.",
@@ -13272,17 +13272,17 @@
   {
     "instruction": "Save with error checking.",
     "input": "",
-    "output": "int err=0, warn=0;\nbool ok = modelDoc.Save3((int)swSaveAsOptions_e.swSaveAsOptions_Silent, ref err, ref warn);\nif (!ok) { if ((err&(int)swFileSaveError_e.swReadOnlySaveError)!=0) Debug.WriteLine(\"[FAIL] Read-only.\");\n    if ((err&(int)swFileSaveError_e.swFileLockError)!=0) Debug.WriteLine(\"[FAIL] Locked.\"); }"
+    "output": "int err=0,warn=0; bool ok = modelDoc.Save3(\n    (int)swSaveAsOptions_e.swSaveAsOptions_Silent, ref err, ref warn);\nif (!ok) Debug.WriteLine(\"[FAIL] Save error=\"+err+\" warn=\"+warn);"
   },
   {
     "instruction": "SaveAs with error handling.",
     "input": "",
-    "output": "int err=0, warn=0;\nbool ok = modelDoc.Extension.SaveAs2(newPath, (int)swSaveAsVersion_e.swSaveAsCurrentVersion,\n    (int)swSaveAsOptions_e.swSaveAsOptions_Copy, null, \"\", false, ref err, ref warn);\nif (!ok) Debug.WriteLine(\"[FAIL] SaveAs error: \" + err);"
+    "output": "int err=0,warn=0; bool ok = modelDoc.Extension.SaveAs2(newPath,\n    (int)swSaveAsVersion_e.swSaveAsCurrentVersion,\n    (int)swSaveAsOptions_e.swSaveAsOptions_Copy, null,\"\",false, ref err, ref warn);\nif (!ok) Debug.WriteLine(\"[FAIL] SaveAs error: \"+err);"
   },
   {
     "instruction": "Open document with error checking.",
     "input": "",
-    "output": "int err=0, warn=0;\nModelDoc2 doc = (ModelDoc2)swApp.OpenDoc6(filePath, (int)swDocumentTypes_e.swDocPART,\n    (int)swOpenDocOptions_e.swOpenDocOptions_Silent, \"\", ref err, ref warn);\nif (doc == null) { if ((err&(int)swFileLoadError_e.swFileNotFoundError)!=0)\n    Debug.WriteLine(\"[FAIL] File not found.\"); return; }"
+    "output": "int err=0,warn=0; ModelDoc2 doc = (ModelDoc2)swApp.OpenDoc6(filePath,\n    (int)swDocumentTypes_e.swDocPART, (int)swOpenDocOptions_e.swOpenDocOptions_Silent,\n    \"\", ref err, ref warn);\nif (doc == null) { Debug.WriteLine(\"[FAIL] Open error: \"+err); return; }"
   },
   {
     "instruction": "Close document without saving.",
@@ -13302,7 +13302,7 @@
   {
     "instruction": "Handle already-open file.",
     "input": "",
-    "output": "ModelDoc2 existing = (ModelDoc2)swApp.GetOpenDocumentByName(targetPath);\nif (existing != null) { int ae=0; swApp.ActivateDoc3(existing.GetTitle(), false,\n    (int)swRebuildOnActivation_e.swDontRebuildActiveDoc, ref ae); }\nelse { int e=0,w=0; swApp.OpenDoc6(targetPath, (int)swDocumentTypes_e.swDocPART,\n    (int)swOpenDocOptions_e.swOpenDocOptions_Silent, \"\", ref e, ref w); }"
+    "output": "ModelDoc2 ex = (ModelDoc2)swApp.GetOpenDocumentByName(targetPath);\nif (ex != null) { int ae=0; swApp.ActivateDoc3(ex.GetTitle(),false,\n    (int)swRebuildOnActivation_e.swDontRebuildActiveDoc, ref ae); }\nelse { int e=0,w=0; swApp.OpenDoc6(targetPath,(int)swDocumentTypes_e.swDocPART,\n    (int)swOpenDocOptions_e.swOpenDocOptions_Silent,\"\",ref e,ref w); }"
   },
   {
     "instruction": "Export to STL.",
@@ -13312,7 +13312,7 @@
   {
     "instruction": "Batch export drawings to PDF.",
     "input": "",
-    "output": "object[] docs = (object[])swApp.GetDocuments(); if (docs == null) return;\nforeach (ModelDoc2 doc in docs) { if (doc.GetType() != (int)swDocumentTypes_e.swDocDRAWING) continue;\n    int e=0,w=0; doc.Extension.SaveAs2(System.IO.Path.ChangeExtension(doc.GetPathName(),\".pdf\"),\n    (int)swSaveAsVersion_e.swSaveAsCurrentVersion, (int)swSaveAsOptions_e.swSaveAsOptions_Silent,\n    null,\"\",false, ref e, ref w); }"
+    "output": "object[] docs = (object[])swApp.GetDocuments(); if (docs==null) return;\nforeach (ModelDoc2 d in docs) { if (d.GetType()!=(int)swDocumentTypes_e.swDocDRAWING) continue;\n    int e=0,w=0; d.Extension.SaveAs2(System.IO.Path.ChangeExtension(d.GetPathName(),\".pdf\"),\n    (int)swSaveAsVersion_e.swSaveAsCurrentVersion,(int)swSaveAsOptions_e.swSaveAsOptions_Silent,\n    null,\"\",false,ref e,ref w); }"
   },
   {
     "instruction": "Create a new part document.",
@@ -13557,7 +13557,7 @@
   {
     "instruction": "How do I add a Hole Wizard hole?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"\",\"FACE\",0.02,0.03,0,false,0,null,0);\nfeatMgr.HoleWizard5((int)swWzdGeneralHoleTypes_e.swWzdHoleTypeSTD,\n    (int)swWzdHoleStandards_e.swWzdHoleStandardAnsiMetric,\n    (int)swWzdHoleFastenerType_e.swWzdHoleFastenerTypeCounterbore,\n    \"M10\",(int)swEndConditions_e.swEndCondBlind, 0.020,0.012,0.008,0,0,0,0,0,0,0,0,0,0,0,0);"
+    "output": "modelDoc.Extension.SelectByID2(\"\",\"FACE\",0.02,0.03,0,false,0,null,0);\nfeatMgr.HoleWizard5((int)swWzdGeneralHoleTypes_e.swWzdHoleTypeSTD,\n    (int)swWzdHoleStandards_e.swWzdHoleStandardAnsiMetric,\n    (int)swWzdHoleFastenerType_e.swWzdHoleFastenerTypeCounterbore, \"M10\",\n    (int)swEndConditions_e.swEndCondBlind,0.020,0.012,0.008,0,0,0,0,0,0,0,0,0,0,0,0);"
   },
   {
     "instruction": "How do I mirror a body?",
@@ -13572,7 +13572,7 @@
   {
     "instruction": "How do I measure distance between faces?",
     "input": "",
-    "output": "Measure m = (Measure)modelDoc.Extension.CreateMeasure();\nmodelDoc.Extension.SelectByID2(\"\",\"FACE\",0.01,0.02,0,false,0,null,0);\nmodelDoc.Extension.SelectByID2(\"\",\"FACE\",0.05,0.02,0,true,0,null,0);\nif (m.Calculate(null)) Debug.WriteLine(\"[OK] \" + (m.Distance*1000) + \" mm\");"
+    "output": "Measure m = (Measure)modelDoc.Extension.CreateMeasure();\nmodelDoc.Extension.SelectByID2(\"\",\"FACE\",0.01,0.02,0,false,0,null,0);\nmodelDoc.Extension.SelectByID2(\"\",\"FACE\",0.05,0.02,0,true,0,null,0);\nif (m.Calculate(null)) Debug.WriteLine(\"[OK] \"+(m.Distance*1000)+\" mm\");"
   },
   {
     "instruction": "How do I export to STL?",
@@ -13602,27 +13602,27 @@
   {
     "instruction": "How do I create a revolve?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"Line1\",\"SKETCHSEGMENT\",0,0,0,false,16,null,0);\nmodelDoc.FeatureManager.FeatureRevolve2(true,true,false,false,false,true,\n    (int)swEndConditions_e.swEndCondBlind,0, 2*Math.PI, 0,false,false,0,0,0,0,0,true,true,true);"
+    "output": "modelDoc.Extension.SelectByID2(\"Line1\",\"SKETCHSEGMENT\",0,0,0,false,16,null,0);\nmodelDoc.FeatureManager.FeatureRevolve2(true,true,false,false,false,true,\n    (int)swEndConditions_e.swEndCondBlind,0,2*Math.PI,0,false,false,0,0,0,0,0,true,true,true);"
   },
   {
     "instruction": "How do I create a linear pattern?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"Hole1\",\"BODYFEATURE\",0,0,0,false,4,null,0);\nmodelDoc.Extension.SelectByID2(\"\",\"EDGE\",0.01,0,0,true,1,null,0);\nmodelDoc.FeatureManager.FeatureLinearPattern4(5,0.015,1,0,false,false,false,false,true,\n    false,false,false,false,false);"
+    "output": "modelDoc.Extension.SelectByID2(\"Hole1\",\"BODYFEATURE\",0,0,0,false,4,null,0);\nmodelDoc.Extension.SelectByID2(\"\",\"EDGE\",0.01,0,0,true,1,null,0);\nmodelDoc.FeatureManager.FeatureLinearPattern4(5,0.015,1,0,false,false,false,false,\n    true,false,false,false,false,false);"
   },
   {
     "instruction": "How do I create a sweep?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"Sketch1\",\"SKETCH\",0,0,0,false,1,null,0);\nmodelDoc.Extension.SelectByID2(\"Sketch2\",\"SKETCH\",0,0,0,true,4,null,0);\nmodelDoc.FeatureManager.InsertProtrusionSwept4(false,false,0,0,false,false,0,0,false,\n    0,0,0,false,true,true,0,false,false);"
+    "output": "modelDoc.Extension.SelectByID2(\"Sketch1\",\"SKETCH\",0,0,0,false,1,null,0);\nmodelDoc.Extension.SelectByID2(\"Sketch2\",\"SKETCH\",0,0,0,true,4,null,0);\nmodelDoc.FeatureManager.InsertProtrusionSwept4(\n    false,false,0,0,false,false,0,0,false,0,0,0,false,true,true,0,false,false);"
   },
   {
     "instruction": "How do I insert a component?",
     "input": "",
-    "output": "Component2 comp = ((AssemblyDoc)modelDoc).AddComponent5(partPath,\n    (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,\n    \"\",false,\"\",0,0.05,0);\nif (comp != null) Debug.WriteLine(\"[OK] \" + comp.Name2);"
+    "output": "Component2 comp = ((AssemblyDoc)modelDoc).AddComponent5(partPath,\n    (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,\n    \"\",false,\"\",0,0.05,0); if (comp!=null) Debug.WriteLine(\"[OK] \"+comp.Name2);"
   },
   {
     "instruction": "How do I add a coincident mate?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"Face1@Part1-1\",\"FACE\",0,0,0,false,1,null,0);\nmodelDoc.Extension.SelectByID2(\"Face1@Part2-1\",\"FACE\",0,0,0,true,1,null,0);\nint err=0; ((AssemblyDoc)modelDoc).AddMate5((int)swMateType_e.swMateCOINCIDENT,\n    (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0,out err);"
+    "output": "modelDoc.Extension.SelectByID2(\"Face1@Part1-1\",\"FACE\",0,0,0,false,1,null,0);\nmodelDoc.Extension.SelectByID2(\"Face1@Part2-1\",\"FACE\",0,0,0,true,1,null,0);\nint err=0; ((AssemblyDoc)modelDoc).AddMate5((int)swMateType_e.swMateCOINCIDENT,\n    (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0, out err);"
   },
   {
     "instruction": "How do I set a custom property?",
@@ -13632,7 +13632,7 @@
   {
     "instruction": "How do I get all faces of a body?",
     "input": "",
-    "output": "Body2 b = (Body2)((object[])((PartDoc)modelDoc).GetBodies2(\n    (int)swBodyType_e.swSolidBody,true))[0];\nforeach (Face2 f in (object[])b.GetFaces()) { Surface s = (Surface)f.GetSurface();\n    Debug.WriteLine(\"[->] Area:\"+f.GetArea()+(s.IsPlane()?\" Plane\":\" Curved\")); }"
+    "output": "Body2 b = (Body2)((object[])((PartDoc)modelDoc).GetBodies2(\n    (int)swBodyType_e.swSolidBody,true))[0];\nforeach (Face2 f in (object[])b.GetFaces()) {\n    Debug.WriteLine(\"[->] Area:\"+f.GetArea()+(((Surface)f.GetSurface()).IsPlane()?\" Plane\":\" Curved\")); }"
   },
   {
     "instruction": "How do I create a circular pattern?",
@@ -13687,7 +13687,7 @@
   {
     "instruction": "How do I create a draft?",
     "input": "",
-    "output": "modelDoc.Extension.SelectByID2(\"\",\"FACE\",0,0,0,false,0,null,0);\nmodelDoc.Extension.SelectByID2(\"Front Plane\",\"PLANE\",0,0,0,true,1,null,0);\nmodelDoc.FeatureManager.InsertDraft(5*Math.PI/180, false);"
+    "output": "modelDoc.Extension.SelectByID2(\"\",\"FACE\",0,0,0,false,0,null,0);\nmodelDoc.Extension.SelectByID2(\"Front Plane\",\"PLANE\",0,0,0,true,1,null,0);\nmodelDoc.FeatureManager.InsertDraft(5*Math.PI/180,false);"
   },
   {
     "instruction": "How do I combine bodies?",
@@ -13712,7 +13712,7 @@
   {
     "instruction": "How do I create a 3D sketch?",
     "input": "",
-    "output": "modelDoc.SketchManager.Insert3DSketch(true);\nmodelDoc.SketchManager.CreateLine(0,0,0, 0.05,0.03,0.01);\nmodelDoc.SketchManager.Insert3DSketch(true);"
+    "output": "modelDoc.SketchManager.Insert3DSketch(true);\nmodelDoc.SketchManager.CreateLine(0,0,0,0.05,0.03,0.01);\nmodelDoc.SketchManager.Insert3DSketch(true); // close"
   },
   {
     "instruction": "How do I unsuppress a feature?",
@@ -13727,17 +13727,17 @@
   {
     "instruction": "How do I get center of mass?",
     "input": "",
-    "output": "MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();\nif (mp != null) { double[] c = (double[])mp.CenterOfMass;\n    Debug.WriteLine(\"[OK] CoG: \"+c[0]+\",\"+c[1]+\",\"+c[2]); }"
+    "output": "MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();\nif (mp!=null) { double[] c=(double[])mp.CenterOfMass;\n    Debug.WriteLine(\"[OK] CoG: \"+c[0]+\",\"+c[1]+\",\"+c[2]); }"
   },
   {
     "instruction": "How do I check the assigned material?",
     "input": "",
-    "output": "string db=\"\", mat=\"\";\n((PartDoc)modelDoc).GetMaterialPropertyName2(\"\", out db, out mat);\nDebug.WriteLine(\"[OK] Material: \"+mat+\" (DB: \"+db+\")\");"
+    "output": "string db=\"\",mat=\"\"; ((PartDoc)modelDoc).GetMaterialPropertyName2(\"\",out db,out mat);\nDebug.WriteLine(\"[OK] Material: \"+mat+\" (DB: \"+db+\")\");"
   },
   {
     "instruction": "How do I get face normal vector?",
     "input": "",
-    "output": "Face2 f = (Face2)selMgr.GetSelectedObject6(1,-1);\nSurface s = (Surface)f.GetSurface(); double[] uv = (double[])f.GetUVRange();\ndouble[] eval = (double[])s.Evaluate((uv[0]+uv[1])/2,(uv[2]+uv[3])/2,1,1);\n// Normal at eval[12], eval[13], eval[14]"
+    "output": "Face2 f = (Face2)selMgr.GetSelectedObject6(1,-1); Surface s = (Surface)f.GetSurface();\ndouble[] uv = (double[])f.GetUVRange();\ndouble[] ev = (double[])s.Evaluate((uv[0]+uv[1])/2,(uv[2]+uv[3])/2,1,1);\n// Normal at ev[12], ev[13], ev[14]"
   },
   {
     "instruction": "How do I activate a drawing sheet?",
@@ -13757,7 +13757,7 @@
   {
     "instruction": "How do I get the moments of inertia?",
     "input": "",
-    "output": "MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();\nif (mp != null) { double[] moi = (double[])mp.GetMomentOfInertia(0);\n    Debug.WriteLine(\"[OK] Ixx=\"+moi[0]+\" Iyy=\"+moi[4]+\" Izz=\"+moi[8]); }"
+    "output": "MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();\nif (mp!=null) { double[] m=(double[])mp.GetMomentOfInertia(0);\n    Debug.WriteLine(\"[OK] Ixx=\"+m[0]+\" Iyy=\"+m[4]+\" Izz=\"+m[8]); }"
   },
   {
     "instruction": "How do I hide a component in an assembly?",
@@ -13882,27 +13882,27 @@
   {
     "instruction": "Recommended batch processing approach?",
     "input": "",
-    "output": "swApp.Visible = false;\nforeach (string file in files) { ModelDoc2 doc = null;\n    try { int e=0,w=0; doc = (ModelDoc2)swApp.OpenDoc6(file,\n        (int)swDocumentTypes_e.swDocPART, (int)swOpenDocOptions_e.swOpenDocOptions_Silent,\n        \"\", ref e, ref w); if (doc == null) continue; /* process */ }\n    finally { if (doc != null) { swApp.CloseDoc(doc.GetTitle()); Marshal.ReleaseComObject(doc); } } }\nswApp.Visible = true;"
+    "output": "swApp.Visible = false;\nforeach (string file in files) { ModelDoc2 doc=null;\n    try { int e=0,w=0; doc=(ModelDoc2)swApp.OpenDoc6(file,(int)swDocumentTypes_e.swDocPART,\n        (int)swOpenDocOptions_e.swOpenDocOptions_Silent,\"\",ref e,ref w);\n        if (doc==null) continue; /* process */ }\n    finally { if (doc!=null){swApp.CloseDoc(doc.GetTitle());Marshal.ReleaseComObject(doc);} } }\nswApp.Visible = true;"
   },
   {
     "instruction": "Modify multiple dimensions efficiently?",
     "input": "",
-    "output": "modelDoc.Extension.EnableSolidWorksAutoBuild = false;\ntry { foreach (var kv in changes) { Dimension d = (Dimension)modelDoc.Parameter(kv.Key);\n    if (d != null) d.SystemValue = kv.Value; } }\nfinally { modelDoc.Extension.EnableSolidWorksAutoBuild = true; modelDoc.ForceRebuild3(true); }"
+    "output": "modelDoc.Extension.EnableSolidWorksAutoBuild = false;\ntry { foreach (var kv in changes) { var d=(Dimension)modelDoc.Parameter(kv.Key);\n    if (d!=null) d.SystemValue = kv.Value; } }\nfinally { modelDoc.Extension.EnableSolidWorksAutoBuild=true; modelDoc.ForceRebuild3(true); }"
   },
   {
     "instruction": "How to structure an add-in?",
     "input": "",
-    "output": "[ComVisible(true), Guid(\"YOUR-GUID\")]\npublic class MyAddin : ISwAddin {\n    private SldWorks swApp;\n    public bool ConnectToSW(object thisSw, int cookie) {\n        swApp = (SldWorks)thisSw; swApp.SetAddinCallbackInfo2(0, this, cookie); return true; }\n    public bool DisconnectFromSW() { swApp = null; GC.Collect(); return true; } }"
+    "output": "[ComVisible(true), Guid(\"YOUR-GUID\")] public class MyAddin : ISwAddin {\n    SldWorks swApp;\n    public bool ConnectToSW(object sw, int cookie) {\n        swApp=(SldWorks)sw; swApp.SetAddinCallbackInfo2(0,this,cookie); return true; }\n    public bool DisconnectFromSW() { swApp=null; GC.Collect(); return true; } }"
   },
   {
     "instruction": "Best practice for pre-feature selection?",
     "input": "",
-    "output": "modelDoc.ClearSelection2(true);\nbool ok = modelDoc.Extension.SelectByID2(\"Sketch1\",\"SKETCH\",0,0,0,false,0,null,0);\nif (!ok) { Debug.WriteLine(\"[FAIL] Select failed.\"); return; }\nmodelDoc.Extension.SelectByID2(\"Front Plane\",\"PLANE\",0,0,0,true,2,null,0);"
+    "output": "modelDoc.ClearSelection2(true);\nbool ok = modelDoc.Extension.SelectByID2(\"Sketch1\",\"SKETCH\",0,0,0,false,0,null,0);\nif (!ok) { Debug.WriteLine(\"[FAIL]\"); return; }\nmodelDoc.Extension.SelectByID2(\"Front Plane\",\"PLANE\",0,0,0,true,2,null,0);"
   },
   {
     "instruction": "How to log progress?",
     "input": "",
-    "output": "Frame frame = (Frame)swApp.Frame();\nframe.SetStatusBarProgressRange(0, total);\nfor (int i = 0; i < total; i++) { frame.SetStatusBarProgressPosition(i);\n    swApp.SetStatusBarText(\"Processing \"+(i+1)+\"/\"+total); /* work */ }\nframe.SetStatusBarProgressPosition(0);"
+    "output": "Frame frame = (Frame)swApp.Frame(); frame.SetStatusBarProgressRange(0, total);\nfor (int i=0; i<total; i++) { frame.SetStatusBarProgressPosition(i);\n    swApp.SetStatusBarText(\"Processing \"+(i+1)+\"/\"+total); }\nframe.SetStatusBarProgressPosition(0);"
   },
   {
     "instruction": "How to handle undo?",
@@ -13912,7 +13912,7 @@
   {
     "instruction": "Best practice for configurations?",
     "input": "",
-    "output": "string[] cfgs = (string[])modelDoc.GetConfigurationNames();\nif (!Array.Exists(cfgs, c => c == target))\n    modelDoc.ConfigurationManager.AddConfiguration2(target,\"\",\"\",0,\"\",\"\",false);\nstring prev = modelDoc.ConfigurationManager.ActiveConfiguration.Name;\nmodelDoc.ShowConfiguration2(target); modelDoc.ForceRebuild3(true);\nmodelDoc.ShowConfiguration2(prev);"
+    "output": "string[] cfgs = (string[])modelDoc.GetConfigurationNames();\nif (!Array.Exists(cfgs, c=>c==target))\n    modelDoc.ConfigurationManager.AddConfiguration2(target,\"\",\"\",0,\"\",\"\",false);\nstring prev = modelDoc.ConfigurationManager.ActiveConfiguration.Name;\nmodelDoc.ShowConfiguration2(target); modelDoc.ForceRebuild3(true);\nmodelDoc.ShowConfiguration2(prev);"
   },
   {
     "instruction": "How to avoid memory leaks?",
@@ -13937,7 +13937,7 @@
   {
     "instruction": "Recursive component traversal?",
     "input": "",
-    "output": "void Traverse(Component2 c, int d) { Debug.WriteLine(new string(' ',d*2)+c.Name2);\n    object[] ch = (object[])c.GetChildren(); if (ch == null) return;\n    foreach (Component2 x in ch) Traverse(x, d+1); }\n// Traverse(assyDoc.GetRootComponent3(true,false), 0);"
+    "output": "void Traverse(Component2 c, int d) { Debug.WriteLine(new string(' ',d*2)+c.Name2);\n    object[] ch=(object[])c.GetChildren(); if (ch==null) return;\n    foreach (Component2 x in ch) Traverse(x,d+1); }"
   },
   {
     "instruction": "Thread safety with SolidWorks COM?",
@@ -13947,7 +13947,7 @@
   {
     "instruction": "Compare two bodies for equality?",
     "input": "",
-    "output": "// Use Operations2 with swBodyOperationINTERSECT; compare intersection volume to originals.\nint[] retStatus; body1.Operations2((int)swBodyOperationType_e.swBodyOperationINTERSECT,\n    body2, out retStatus);"
+    "output": "Use Operations2 with swBodyOperationINTERSECT; compare intersection volume to originals. int[] st; body1.Operations2((int)swBodyOperationType_e.swBodyOperationINTERSECT, body2, out st);"
   },
   {
     "instruction": "Suppress prompts during batch ops?",
@@ -13957,11 +13957,11 @@
   {
     "instruction": "Detect if sketch is fully constrained?",
     "input": "",
-    "output": "Sketch sk = modelDoc.GetActiveSketch2();\nif (sk != null) { int s = (int)sk.GetSolveStatus();\n    Debug.WriteLine(s==0?\"[OK] Fully defined\":s==1?\"[WARN] Under\":\"[FAIL] Over\"); }"
+    "output": "Sketch sk = modelDoc.GetActiveSketch2(); if (sk!=null) { int s=(int)sk.GetSolveStatus();\n    Debug.WriteLine(s==0?\"[OK] Defined\":s==1?\"[WARN] Under\":\"[FAIL] Over\"); }"
   },
   {
     "instruction": "Export BOM from assembly?",
     "input": "",
-    "output": "TableAnnotation bom = (TableAnnotation)view.InsertBomTable4(true, 0, 0,\n    (int)swBomType_e.swBomType_TopLevelOnly, \"\",\n    (int)swBOMConfigurationAnchorType_e.swBOMConfigurationAnchor_TopLeft,\n    (int)swNumberingType_e.swNumberingType_Detailed, false);\nif (bom != null) Debug.WriteLine(\"[OK] BOM rows: \"+bom.RowCount);"
+    "output": "TableAnnotation bom = (TableAnnotation)view.InsertBomTable4(true,0,0,\n    (int)swBomType_e.swBomType_TopLevelOnly,\"\",\n    (int)swBOMConfigurationAnchorType_e.swBOMConfigurationAnchor_TopLeft,\n    (int)swNumberingType_e.swNumberingType_Detailed,false);\nif (bom!=null) Debug.WriteLine(\"[OK] BOM rows: \"+bom.RowCount);"
   }
 ]
