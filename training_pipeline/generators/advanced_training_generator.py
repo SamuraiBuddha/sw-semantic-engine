@@ -1,8 +1,5 @@
 """Advanced training data generator for SolidWorks Semantic Engine.
-
-Generates ~200 instruction/code training pairs covering error handling,
-conceptual understanding, troubleshooting, and advanced SolidWorks API patterns.
-"""
+Generates ~200 instruction/code pairs: error handling, conceptual, troubleshooting, best practices."""
 from __future__ import annotations
 import textwrap
 from typing import List, Tuple
@@ -10,16 +7,11 @@ TrainingPair = Tuple[str, str]
 D = textwrap.dedent
 
 class ErrorHandlingGenerator:
-    """Training pairs for null checks, COM exceptions, rebuild patterns,
-    selection troubleshooting, and file I/O safety (~80 pairs)."""
-
+    """~80 pairs: null checks, COM exceptions, rebuild, selection, file I/O."""
     def generate_all(self) -> List[TrainingPair]:
         p: List[TrainingPair] = []
-        p.extend(self._null_checks())
-        p.extend(self._com_exceptions())
-        p.extend(self._rebuild())
-        p.extend(self._selection())
-        p.extend(self._file_ops())
+        p.extend(self._null_checks()); p.extend(self._com_exceptions())
+        p.extend(self._rebuild()); p.extend(self._selection()); p.extend(self._file_ops())
         return p
 
     def _null_checks(self) -> List[TrainingPair]:
@@ -32,13 +24,13 @@ class ErrorHandlingGenerator:
             ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;
             if (modelDoc == null) throw new InvalidOperationException("No active document.");
             if (modelDoc.GetType() != (int)swDocumentTypes_e.swDocPART)
-                throw new InvalidOperationException("Active document is not a part.");
+                throw new InvalidOperationException("Not a part.");
             PartDoc partDoc = (PartDoc)modelDoc;""")))
         p.append(("Get the active document and check if it is an assembly.", D("""\
             ModelDoc2 modelDoc = (ModelDoc2)swApp.ActiveDoc;
             if (modelDoc == null || modelDoc.GetType() != (int)swDocumentTypes_e.swDocASSEMBLY)
-            { swApp.SendMsgToUser2("Please open an assembly.",
-                (int)swMessageBoxIcon_e.swMbWarning, (int)swMessageBoxBtn_e.swMbOk); return; }
+            { swApp.SendMsgToUser2("Open an assembly.", (int)swMessageBoxIcon_e.swMbWarning,
+                (int)swMessageBoxBtn_e.swMbOk); return; }
             AssemblyDoc assyDoc = (AssemblyDoc)modelDoc;""")))
         for call, desc in [("FeatureExtrusion3","boss extrude"),("FeatureCut4","cut extrude"),
                 ("FeatureRevolve2","revolve"),("InsertProtrusionBlend2","loft"),
@@ -48,45 +40,38 @@ class ErrorHandlingGenerator:
             p.append((f"Check if a {desc} feature creation succeeded.", D(f"""\
                 Feature feat = (Feature)featMgr.{call}(/* params */);
                 if (feat == null) {{ swApp.SendMsgToUser2("Failed to create {desc}.",
-                    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk);
-                    modelDoc.EditUndo2(1); return; }}""")))
+                    (int)swMessageBoxIcon_e.swMbStop, (int)swMessageBoxBtn_e.swMbOk); return; }}""")))
         p.append(("Verify a sketch is active before adding entities.", D("""\
-            if (modelDoc.GetActiveSketch2() == null) { swApp.SendMsgToUser2(
-                "No active sketch.", (int)swMessageBoxIcon_e.swMbWarning,
-                (int)swMessageBoxBtn_e.swMbOk); return; }""")))
-        p.append(("Verify that a selection succeeded before operating.", D("""\
-            bool selected = modelDoc.Extension.SelectByID2("Boss-Extrude1",
-                "BODYFEATURE", 0, 0, 0, false, 0, null, 0);
-            if (!selected) { Debug.WriteLine("[FAIL] Selection failed."); return; }""")))
-        p.append(("Check if inserting a component into an assembly succeeded.", D("""\
+            if (modelDoc.GetActiveSketch2() == null) { swApp.SendMsgToUser2("No active sketch.",
+                (int)swMessageBoxIcon_e.swMbWarning, (int)swMessageBoxBtn_e.swMbOk); return; }""")))
+        p.append(("Verify that a selection succeeded.", D("""\
+            bool sel = modelDoc.Extension.SelectByID2("Boss-Extrude1","BODYFEATURE",0,0,0,false,0,null,0);
+            if (!sel) { Debug.WriteLine("[FAIL] Selection failed."); return; }""")))
+        p.append(("Check component insertion succeeded.", D("""\
             Component2 comp = assyDoc.AddComponent5(partPath,
                 (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,
-                "", false, "", 0, 0, 0);
+                "",false,"",0,0,0);
             if (comp == null) { Debug.WriteLine("[FAIL] Insert failed."); return; }""")))
-        p.append(("Safely get a dimension value with null checking.", D("""\
+        p.append(("Safely get a dimension value.", D("""\
             Feature feat = (Feature)modelDoc.FeatureByName("Boss-Extrude1");
-            if (feat == null) { Debug.WriteLine("[WARN] Feature not found."); return; }
+            if (feat == null) return;
             DisplayDimension dd = (DisplayDimension)feat.GetFirstDisplayDimension();
             if (dd == null) return;
             double val = ((Dimension)dd.GetDimension2(0)).SystemValue;""")))
         p.append(("Check if a part has solid bodies.", D("""\
-            object[] bodies = (object[])((PartDoc)modelDoc).GetBodies2(
-                (int)swBodyType_e.swSolidBody, true);
+            object[] bodies = (object[])((PartDoc)modelDoc).GetBodies2((int)swBodyType_e.swSolidBody,true);
             if (bodies == null || bodies.Length == 0) { Debug.WriteLine("[WARN] No bodies."); return; }""")))
-        p.append(("Safely switch to a named configuration.", D("""\
-            if (!modelDoc.ShowConfiguration2(configName)) {
-                string[] cfgs = (string[])modelDoc.GetConfigurationNames();
-                Debug.WriteLine("[FAIL] Config not found. Available: " + string.Join(", ", cfgs)); return; }""")))
-        p.append(("Check that a drawing view exists.", D("""\
-            View view = (View)((DrawingDoc)modelDoc).GetFirstView();
-            view = (View)view.GetNextView();
-            if (view == null) { Debug.WriteLine("[WARN] No model views."); return; }""")))
+        p.append(("Safely switch configuration.", D("""\
+            if (!modelDoc.ShowConfiguration2(configName)) { string[] cfgs = (string[])modelDoc.GetConfigurationNames();
+                Debug.WriteLine("[FAIL] Not found. Available: " + string.Join(", ", cfgs)); return; }""")))
+        p.append(("Check drawing view exists.", D("""\
+            View v = (View)((DrawingDoc)modelDoc).GetFirstView(); v = (View)v.GetNextView();
+            if (v == null) { Debug.WriteLine("[WARN] No model views."); return; }""")))
         p.append(("Verify mate creation succeeded.", D("""\
             int mateErr = 0;
             Mate2 mate = (Mate2)assyDoc.AddMate5((int)swMateType_e.swMateCOINCIDENT,
-                (int)swMateAlign_e.swMateAlignALIGNED, false, 0,0,0,0,0,0,0,0,
-                false, false, 0, out mateErr);
-            if (mate == null) { Debug.WriteLine("[FAIL] Mate error: " + mateErr); return; }""")))
+                (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0,out mateErr);
+            if (mate == null) { Debug.WriteLine("[FAIL] Error: " + mateErr); return; }""")))
         return p
 
     def _com_exceptions(self) -> List[TrainingPair]:
@@ -105,13 +90,11 @@ class ErrorHandlingGenerator:
                 while (feat != null) { Feature next = (Feature)feat.GetNextFeature();
                     Marshal.ReleaseComObject(feat); feat = next; }""")),
             ("Interpret HRESULT codes from COMException.", D("""\
-                catch (COMException comEx) {
-                    switch ((uint)comEx.ErrorCode) {
-                        case 0x80004005: Debug.WriteLine("[FAIL] E_FAIL"); break;
-                        case 0x80070005: Debug.WriteLine("[FAIL] ACCESS_DENIED"); break;
-                        case 0x8001010A: Debug.WriteLine("[WARN] Busy -- retry"); break;
-                        default: Debug.WriteLine("[FAIL] 0x" + comEx.ErrorCode.ToString("X")); break;
-                    } }""")),
+                catch (COMException cx) { switch ((uint)cx.ErrorCode) {
+                    case 0x80004005: Debug.WriteLine("[FAIL] E_FAIL"); break;
+                    case 0x80070005: Debug.WriteLine("[FAIL] ACCESS_DENIED"); break;
+                    case 0x8001010A: Debug.WriteLine("[WARN] Busy"); break;
+                    default: Debug.WriteLine("[FAIL] 0x"+cx.ErrorCode.ToString("X")); break; } }""")),
             ("Safely dispose of a selection set.", D("""\
                 SelectionMgr selMgr = (SelectionMgr)modelDoc.SelectionManager;
                 try { int c = selMgr.GetSelectedObjectCount2(-1);
@@ -132,13 +115,11 @@ class ErrorHandlingGenerator:
                     catch (COMException ex) when ((uint)ex.ErrorCode == 0x80010001)
                     { Thread.Sleep(500 * (i + 1)); } }""")),
             ("Implement IMessageFilter for COM retry.", D("""\
-                [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown),
-                 Guid("00000016-0000-0000-C000-000000000046")]
+                [ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown), Guid("00000016-0000-0000-C000-000000000046")]
                 interface IMessageFilter {
-                    [PreserveSig] int HandleInComingCall(int dwCallType, IntPtr hTaskCaller, int dwTickCount, IntPtr lpInterfaceInfo);
-                    [PreserveSig] int RetryRejectedCall(IntPtr hTaskCallee, int dwTickCount, int dwRejectType);
-                    [PreserveSig] int MessagePending(IntPtr hTaskCallee, int dwTickCount, int dwPendingType);
-                }""")),
+                    [PreserveSig] int HandleInComingCall(int a, IntPtr b, int c, IntPtr d);
+                    [PreserveSig] int RetryRejectedCall(IntPtr a, int b, int c);
+                    [PreserveSig] int MessagePending(IntPtr a, int b, int c); }""")),
             ("Wrap operations in COM-safe try/finally.", D("""\
                 Feature feat = null; Body2 body = null;
                 try { feat = (Feature)modelDoc.FeatureByName("Boss-Extrude1");
@@ -153,10 +134,8 @@ class ErrorHandlingGenerator:
                 if (bodies == null) { Debug.WriteLine("[WARN] No bodies."); return; }""")),
             ("Using-pattern wrapper for COM lifetime.", D("""\
                 public class ComRef<T> : IDisposable where T : class {
-                    public T Obj { get; private set; }
-                    public ComRef(T obj) { Obj = obj; }
-                    public void Dispose() { if (Obj != null) { Marshal.ReleaseComObject(Obj); Obj = null; } }
-                }""")),
+                    public T Obj { get; private set; } public ComRef(T o) { Obj = o; }
+                    public void Dispose() { if (Obj!=null) { Marshal.ReleaseComObject(Obj); Obj=null; } } }""")),
             ("Handle COM timeout during large rebuild.", D("""\
                 try { modelDoc.ForceRebuild3(false); }
                 catch (COMException ex) when ((uint)ex.ErrorCode == 0x8001010A) {
@@ -262,21 +241,19 @@ class ErrorHandlingGenerator:
     def _file_ops(self) -> List[TrainingPair]:
         return [
             ("Save with error checking.", D("""\
-                int err=0, warn=0;
-                bool ok = modelDoc.Save3((int)swSaveAsOptions_e.swSaveAsOptions_Silent, ref err, ref warn);
-                if (!ok) { if ((err&(int)swFileSaveError_e.swReadOnlySaveError)!=0) Debug.WriteLine("[FAIL] Read-only.");
-                    if ((err&(int)swFileSaveError_e.swFileLockError)!=0) Debug.WriteLine("[FAIL] Locked."); }""")),
+                int err=0,warn=0; bool ok = modelDoc.Save3(
+                    (int)swSaveAsOptions_e.swSaveAsOptions_Silent, ref err, ref warn);
+                if (!ok) Debug.WriteLine("[FAIL] Save error="+err+" warn="+warn);""")),
             ("SaveAs with error handling.", D("""\
-                int err=0, warn=0;
-                bool ok = modelDoc.Extension.SaveAs2(newPath, (int)swSaveAsVersion_e.swSaveAsCurrentVersion,
-                    (int)swSaveAsOptions_e.swSaveAsOptions_Copy, null, "", false, ref err, ref warn);
-                if (!ok) Debug.WriteLine("[FAIL] SaveAs error: " + err);""")),
+                int err=0,warn=0; bool ok = modelDoc.Extension.SaveAs2(newPath,
+                    (int)swSaveAsVersion_e.swSaveAsCurrentVersion,
+                    (int)swSaveAsOptions_e.swSaveAsOptions_Copy, null,"",false, ref err, ref warn);
+                if (!ok) Debug.WriteLine("[FAIL] SaveAs error: "+err);""")),
             ("Open document with error checking.", D("""\
-                int err=0, warn=0;
-                ModelDoc2 doc = (ModelDoc2)swApp.OpenDoc6(filePath, (int)swDocumentTypes_e.swDocPART,
-                    (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref err, ref warn);
-                if (doc == null) { if ((err&(int)swFileLoadError_e.swFileNotFoundError)!=0)
-                    Debug.WriteLine("[FAIL] File not found."); return; }""")),
+                int err=0,warn=0; ModelDoc2 doc = (ModelDoc2)swApp.OpenDoc6(filePath,
+                    (int)swDocumentTypes_e.swDocPART, (int)swOpenDocOptions_e.swOpenDocOptions_Silent,
+                    "", ref err, ref warn);
+                if (doc == null) { Debug.WriteLine("[FAIL] Open error: "+err); return; }""")),
             ("Close document without saving.", "swApp.CloseDoc(modelDoc.GetTitle());"),
             ("Check if file is read-only.", D("""\
                 string path = modelDoc.GetPathName();
@@ -287,21 +264,21 @@ class ErrorHandlingGenerator:
                     (int)swSaveAsVersion_e.swSaveAsCurrentVersion,
                     (int)swSaveAsOptions_e.swSaveAsOptions_Silent, null,"",false, ref e, ref w);""")),
             ("Handle already-open file.", D("""\
-                ModelDoc2 existing = (ModelDoc2)swApp.GetOpenDocumentByName(targetPath);
-                if (existing != null) { int ae=0; swApp.ActivateDoc3(existing.GetTitle(), false,
+                ModelDoc2 ex = (ModelDoc2)swApp.GetOpenDocumentByName(targetPath);
+                if (ex != null) { int ae=0; swApp.ActivateDoc3(ex.GetTitle(),false,
                     (int)swRebuildOnActivation_e.swDontRebuildActiveDoc, ref ae); }
-                else { int e=0,w=0; swApp.OpenDoc6(targetPath, (int)swDocumentTypes_e.swDocPART,
-                    (int)swOpenDocOptions_e.swOpenDocOptions_Silent, "", ref e, ref w); }""")),
+                else { int e=0,w=0; swApp.OpenDoc6(targetPath,(int)swDocumentTypes_e.swDocPART,
+                    (int)swOpenDocOptions_e.swOpenDocOptions_Silent,"",ref e,ref w); }""")),
             ("Export to STL.", D("""\
                 int e=0,w=0; modelDoc.Extension.SaveAs2(stlPath,
                     (int)swSaveAsVersion_e.swSaveAsCurrentVersion,
                     (int)swSaveAsOptions_e.swSaveAsOptions_Silent, null,"",false, ref e, ref w);""")),
             ("Batch export drawings to PDF.", D("""\
-                object[] docs = (object[])swApp.GetDocuments(); if (docs == null) return;
-                foreach (ModelDoc2 doc in docs) { if (doc.GetType() != (int)swDocumentTypes_e.swDocDRAWING) continue;
-                    int e=0,w=0; doc.Extension.SaveAs2(System.IO.Path.ChangeExtension(doc.GetPathName(),".pdf"),
-                    (int)swSaveAsVersion_e.swSaveAsCurrentVersion, (int)swSaveAsOptions_e.swSaveAsOptions_Silent,
-                    null,"",false, ref e, ref w); }""")),
+                object[] docs = (object[])swApp.GetDocuments(); if (docs==null) return;
+                foreach (ModelDoc2 d in docs) { if (d.GetType()!=(int)swDocumentTypes_e.swDocDRAWING) continue;
+                    int e=0,w=0; d.Extension.SaveAs2(System.IO.Path.ChangeExtension(d.GetPathName(),".pdf"),
+                    (int)swSaveAsVersion_e.swSaveAsCurrentVersion,(int)swSaveAsOptions_e.swSaveAsOptions_Silent,
+                    null,"",false,ref e,ref w); }""")),
             ("Create a new part document.", D("""\
                 string t = swApp.GetUserPreferenceStringValue((int)swUserPreferenceStringValue_e.swDefaultTemplatePart);
                 ModelDoc2 nd = (ModelDoc2)swApp.NewDocument(t, 0, 0, 0);
@@ -319,17 +296,12 @@ class ErrorHandlingGenerator:
                     (int)swSaveAsOptions_e.swSaveAsOptions_Silent, null,"",false, ref e, ref w);""")),
         ]
 
-
 class ConceptualGenerator:
-    """Training pairs for conceptual understanding, how-to, troubleshooting,
-    and best practices (~120 pairs)."""
-
+    """~120 pairs: explain, how-to, troubleshooting, best practices."""
     def generate_all(self) -> List[TrainingPair]:
         p: List[TrainingPair] = []
-        p.extend(self._explain())
-        p.extend(self._how_to())
-        p.extend(self._troubleshoot())
-        p.extend(self._best_practices())
+        p.extend(self._explain()); p.extend(self._how_to())
+        p.extend(self._troubleshoot()); p.extend(self._best_practices())
         return p
 
     def _explain(self) -> List[TrainingPair]:
@@ -436,8 +408,8 @@ class ConceptualGenerator:
                 modelDoc.Extension.SelectByID2("","FACE",0.02,0.03,0,false,0,null,0);
                 featMgr.HoleWizard5((int)swWzdGeneralHoleTypes_e.swWzdHoleTypeSTD,
                     (int)swWzdHoleStandards_e.swWzdHoleStandardAnsiMetric,
-                    (int)swWzdHoleFastenerType_e.swWzdHoleFastenerTypeCounterbore,
-                    "M10",(int)swEndConditions_e.swEndCondBlind, 0.020,0.012,0.008,0,0,0,0,0,0,0,0,0,0,0,0);""")),
+                    (int)swWzdHoleFastenerType_e.swWzdHoleFastenerTypeCounterbore, "M10",
+                    (int)swEndConditions_e.swEndCondBlind,0.020,0.012,0.008,0,0,0,0,0,0,0,0,0,0,0,0);""")),
             ("How do I mirror a body?", D("""\
                 modelDoc.Extension.SelectByID2("Body1","SOLIDBODY",0,0,0,false,1,null,0);
                 modelDoc.Extension.SelectByID2("Right Plane","PLANE",0,0,0,true,2,null,0);
@@ -450,7 +422,7 @@ class ConceptualGenerator:
                 Measure m = (Measure)modelDoc.Extension.CreateMeasure();
                 modelDoc.Extension.SelectByID2("","FACE",0.01,0.02,0,false,0,null,0);
                 modelDoc.Extension.SelectByID2("","FACE",0.05,0.02,0,true,0,null,0);
-                if (m.Calculate(null)) Debug.WriteLine("[OK] " + (m.Distance*1000) + " mm");""")),
+                if (m.Calculate(null)) Debug.WriteLine("[OK] "+(m.Distance*1000)+" mm");""")),
             ("How do I export to STL?", D("""\
                 int e=0,w=0; modelDoc.Extension.SaveAs2(stlPath,
                     (int)swSaveAsVersion_e.swSaveAsCurrentVersion,
@@ -473,27 +445,26 @@ class ConceptualGenerator:
             ("How do I create a revolve?", D("""\
                 modelDoc.Extension.SelectByID2("Line1","SKETCHSEGMENT",0,0,0,false,16,null,0);
                 modelDoc.FeatureManager.FeatureRevolve2(true,true,false,false,false,true,
-                    (int)swEndConditions_e.swEndCondBlind,0, 2*Math.PI, 0,false,false,0,0,0,0,0,true,true,true);""")),
+                    (int)swEndConditions_e.swEndCondBlind,0,2*Math.PI,0,false,false,0,0,0,0,0,true,true,true);""")),
             ("How do I create a linear pattern?", D("""\
                 modelDoc.Extension.SelectByID2("Hole1","BODYFEATURE",0,0,0,false,4,null,0);
                 modelDoc.Extension.SelectByID2("","EDGE",0.01,0,0,true,1,null,0);
-                modelDoc.FeatureManager.FeatureLinearPattern4(5,0.015,1,0,false,false,false,false,true,
-                    false,false,false,false,false);""")),
+                modelDoc.FeatureManager.FeatureLinearPattern4(5,0.015,1,0,false,false,false,false,
+                    true,false,false,false,false,false);""")),
             ("How do I create a sweep?", D("""\
                 modelDoc.Extension.SelectByID2("Sketch1","SKETCH",0,0,0,false,1,null,0);
                 modelDoc.Extension.SelectByID2("Sketch2","SKETCH",0,0,0,true,4,null,0);
-                modelDoc.FeatureManager.InsertProtrusionSwept4(false,false,0,0,false,false,0,0,false,
-                    0,0,0,false,true,true,0,false,false);""")),
+                modelDoc.FeatureManager.InsertProtrusionSwept4(
+                    false,false,0,0,false,false,0,0,false,0,0,0,false,true,true,0,false,false);""")),
             ("How do I insert a component?", D("""\
                 Component2 comp = ((AssemblyDoc)modelDoc).AddComponent5(partPath,
                     (int)swAddComponentConfigOptions_e.swAddComponentConfigOptions_CurrentSelectedConfig,
-                    "",false,"",0,0.05,0);
-                if (comp != null) Debug.WriteLine("[OK] " + comp.Name2);""")),
+                    "",false,"",0,0.05,0); if (comp!=null) Debug.WriteLine("[OK] "+comp.Name2);""")),
             ("How do I add a coincident mate?", D("""\
                 modelDoc.Extension.SelectByID2("Face1@Part1-1","FACE",0,0,0,false,1,null,0);
                 modelDoc.Extension.SelectByID2("Face1@Part2-1","FACE",0,0,0,true,1,null,0);
                 int err=0; ((AssemblyDoc)modelDoc).AddMate5((int)swMateType_e.swMateCOINCIDENT,
-                    (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0,out err);""")),
+                    (int)swMateAlign_e.swMateAlignALIGNED,false,0,0,0,0,0,0,0,0,false,false,0, out err);""")),
             ("How do I set a custom property?", D("""\
                 modelDoc.Extension.CustomPropertyManager[""].Add3("PartNumber",
                     (int)swCustomInfoType_e.swCustomInfoText, "PN-12345",
@@ -501,8 +472,8 @@ class ConceptualGenerator:
             ("How do I get all faces of a body?", D("""\
                 Body2 b = (Body2)((object[])((PartDoc)modelDoc).GetBodies2(
                     (int)swBodyType_e.swSolidBody,true))[0];
-                foreach (Face2 f in (object[])b.GetFaces()) { Surface s = (Surface)f.GetSurface();
-                    Debug.WriteLine("[->] Area:"+f.GetArea()+(s.IsPlane()?" Plane":" Curved")); }""")),
+                foreach (Face2 f in (object[])b.GetFaces()) {
+                    Debug.WriteLine("[->] Area:"+f.GetArea()+(((Surface)f.GetSurface()).IsPlane()?" Plane":" Curved")); }""")),
             ("How do I create a circular pattern?", D("""\
                 modelDoc.Extension.SelectByID2("Hole1","BODYFEATURE",0,0,0,false,4,null,0);
                 modelDoc.Extension.SelectByID2("","EDGE",0,0,0,true,1,null,0);
@@ -538,7 +509,7 @@ class ConceptualGenerator:
             ("How do I create a draft?", D("""\
                 modelDoc.Extension.SelectByID2("","FACE",0,0,0,false,0,null,0);
                 modelDoc.Extension.SelectByID2("Front Plane","PLANE",0,0,0,true,1,null,0);
-                modelDoc.FeatureManager.InsertDraft(5*Math.PI/180, false);""")),
+                modelDoc.FeatureManager.InsertDraft(5*Math.PI/180,false);""")),
             ("How do I combine bodies?", D("""\
                 modelDoc.Extension.SelectByID2("Body1","SOLIDBODY",0,0,0,false,0,null,0);
                 modelDoc.Extension.SelectByID2("Body2","SOLIDBODY",0,0,0,true,0,null,0);
@@ -551,8 +522,8 @@ class ConceptualGenerator:
                 if (mp != null) Debug.WriteLine("[OK] Volume: " + mp.Volume + " m^3");""")),
             ("How do I create a 3D sketch?", D("""\
                 modelDoc.SketchManager.Insert3DSketch(true);
-                modelDoc.SketchManager.CreateLine(0,0,0, 0.05,0.03,0.01);
-                modelDoc.SketchManager.Insert3DSketch(true);""")),
+                modelDoc.SketchManager.CreateLine(0,0,0,0.05,0.03,0.01);
+                modelDoc.SketchManager.Insert3DSketch(true); // close""")),
             ("How do I unsuppress a feature?", D("""\
                 Feature f = (Feature)modelDoc.FeatureByName("Fillet1");
                 if (f != null) { f.SetSuppression2((int)swFeatureSuppressionAction_e.swUnSuppressFeature,
@@ -561,17 +532,16 @@ class ConceptualGenerator:
              'Feature f = (Feature)modelDoc.FeatureByName("Boss-Extrude1");\nif (f != null) f.Name = "Base_Plate";'),
             ("How do I get center of mass?", D("""\
                 MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();
-                if (mp != null) { double[] c = (double[])mp.CenterOfMass;
+                if (mp!=null) { double[] c=(double[])mp.CenterOfMass;
                     Debug.WriteLine("[OK] CoG: "+c[0]+","+c[1]+","+c[2]); }""")),
             ("How do I check the assigned material?", D("""\
-                string db="", mat="";
-                ((PartDoc)modelDoc).GetMaterialPropertyName2("", out db, out mat);
+                string db="",mat=""; ((PartDoc)modelDoc).GetMaterialPropertyName2("",out db,out mat);
                 Debug.WriteLine("[OK] Material: "+mat+" (DB: "+db+")");""")),
             ("How do I get face normal vector?", D("""\
-                Face2 f = (Face2)selMgr.GetSelectedObject6(1,-1);
-                Surface s = (Surface)f.GetSurface(); double[] uv = (double[])f.GetUVRange();
-                double[] eval = (double[])s.Evaluate((uv[0]+uv[1])/2,(uv[2]+uv[3])/2,1,1);
-                // Normal at eval[12], eval[13], eval[14]""")),
+                Face2 f = (Face2)selMgr.GetSelectedObject6(1,-1); Surface s = (Surface)f.GetSurface();
+                double[] uv = (double[])f.GetUVRange();
+                double[] ev = (double[])s.Evaluate((uv[0]+uv[1])/2,(uv[2]+uv[3])/2,1,1);
+                // Normal at ev[12], ev[13], ev[14]""")),
             ("How do I activate a drawing sheet?", D("""\
                 bool ok = ((DrawingDoc)modelDoc).ActivateSheet("Sheet2");
                 if (!ok) Debug.WriteLine("[FAIL] Could not activate Sheet2.");""")),
@@ -583,8 +553,8 @@ class ConceptualGenerator:
                     Debug.WriteLine("[->] Config: " + cfg);""")),
             ("How do I get the moments of inertia?", D("""\
                 MassProperty mp = (MassProperty)modelDoc.Extension.CreateMassProperty();
-                if (mp != null) { double[] moi = (double[])mp.GetMomentOfInertia(0);
-                    Debug.WriteLine("[OK] Ixx="+moi[0]+" Iyy="+moi[4]+" Izz="+moi[8]); }""")),
+                if (mp!=null) { double[] m=(double[])mp.GetMomentOfInertia(0);
+                    Debug.WriteLine("[OK] Ixx="+m[0]+" Iyy="+m[4]+" Izz="+m[8]); }""")),
             ("How do I hide a component in an assembly?", D("""\
                 modelDoc.Extension.SelectByID2("Part1-1","COMPONENT",0,0,0,false,0,null,0);
                 modelDoc.Extension.HideComponent();""")),
@@ -653,34 +623,32 @@ class ConceptualGenerator:
                     try { while (Marshal.ReleaseComObject(o)>0) {} } catch {} finally { o=null; } } }""")),
             ("Recommended batch processing approach?", D("""\
                 swApp.Visible = false;
-                foreach (string file in files) { ModelDoc2 doc = null;
-                    try { int e=0,w=0; doc = (ModelDoc2)swApp.OpenDoc6(file,
-                        (int)swDocumentTypes_e.swDocPART, (int)swOpenDocOptions_e.swOpenDocOptions_Silent,
-                        "", ref e, ref w); if (doc == null) continue; /* process */ }
-                    finally { if (doc != null) { swApp.CloseDoc(doc.GetTitle()); Marshal.ReleaseComObject(doc); } } }
+                foreach (string file in files) { ModelDoc2 doc=null;
+                    try { int e=0,w=0; doc=(ModelDoc2)swApp.OpenDoc6(file,(int)swDocumentTypes_e.swDocPART,
+                        (int)swOpenDocOptions_e.swOpenDocOptions_Silent,"",ref e,ref w);
+                        if (doc==null) continue; /* process */ }
+                    finally { if (doc!=null){swApp.CloseDoc(doc.GetTitle());Marshal.ReleaseComObject(doc);} } }
                 swApp.Visible = true;""")),
             ("Modify multiple dimensions efficiently?", D("""\
                 modelDoc.Extension.EnableSolidWorksAutoBuild = false;
-                try { foreach (var kv in changes) { Dimension d = (Dimension)modelDoc.Parameter(kv.Key);
-                    if (d != null) d.SystemValue = kv.Value; } }
-                finally { modelDoc.Extension.EnableSolidWorksAutoBuild = true; modelDoc.ForceRebuild3(true); }""")),
+                try { foreach (var kv in changes) { var d=(Dimension)modelDoc.Parameter(kv.Key);
+                    if (d!=null) d.SystemValue = kv.Value; } }
+                finally { modelDoc.Extension.EnableSolidWorksAutoBuild=true; modelDoc.ForceRebuild3(true); }""")),
             ("How to structure an add-in?", D("""\
-                [ComVisible(true), Guid("YOUR-GUID")]
-                public class MyAddin : ISwAddin {
-                    private SldWorks swApp;
-                    public bool ConnectToSW(object thisSw, int cookie) {
-                        swApp = (SldWorks)thisSw; swApp.SetAddinCallbackInfo2(0, this, cookie); return true; }
-                    public bool DisconnectFromSW() { swApp = null; GC.Collect(); return true; } }""")),
+                [ComVisible(true), Guid("YOUR-GUID")] public class MyAddin : ISwAddin {
+                    SldWorks swApp;
+                    public bool ConnectToSW(object sw, int cookie) {
+                        swApp=(SldWorks)sw; swApp.SetAddinCallbackInfo2(0,this,cookie); return true; }
+                    public bool DisconnectFromSW() { swApp=null; GC.Collect(); return true; } }""")),
             ("Best practice for pre-feature selection?", D("""\
                 modelDoc.ClearSelection2(true);
                 bool ok = modelDoc.Extension.SelectByID2("Sketch1","SKETCH",0,0,0,false,0,null,0);
-                if (!ok) { Debug.WriteLine("[FAIL] Select failed."); return; }
+                if (!ok) { Debug.WriteLine("[FAIL]"); return; }
                 modelDoc.Extension.SelectByID2("Front Plane","PLANE",0,0,0,true,2,null,0);""")),
             ("How to log progress?", D("""\
-                Frame frame = (Frame)swApp.Frame();
-                frame.SetStatusBarProgressRange(0, total);
-                for (int i = 0; i < total; i++) { frame.SetStatusBarProgressPosition(i);
-                    swApp.SetStatusBarText("Processing "+(i+1)+"/"+total); /* work */ }
+                Frame frame = (Frame)swApp.Frame(); frame.SetStatusBarProgressRange(0, total);
+                for (int i=0; i<total; i++) { frame.SetStatusBarProgressPosition(i);
+                    swApp.SetStatusBarText("Processing "+(i+1)+"/"+total); }
                 frame.SetStatusBarProgressPosition(0);""")),
             ("How to handle undo?", D("""\
                 modelDoc.Extension.StartRecordingUndoObject("MyAddin: Op");
@@ -688,7 +656,7 @@ class ConceptualGenerator:
                 catch { modelDoc.EditUndo2(1); throw; }""")),
             ("Best practice for configurations?", D("""\
                 string[] cfgs = (string[])modelDoc.GetConfigurationNames();
-                if (!Array.Exists(cfgs, c => c == target))
+                if (!Array.Exists(cfgs, c=>c==target))
                     modelDoc.ConfigurationManager.AddConfiguration2(target,"","",0,"","",false);
                 string prev = modelDoc.ConfigurationManager.ActiveConfiguration.Name;
                 modelDoc.ShowConfiguration2(target); modelDoc.ForceRebuild3(true);
@@ -705,42 +673,28 @@ class ConceptualGenerator:
              "Use version-independent ProgID 'SldWorks.Application'. Check RevisionNumber() for version logic. Try/catch around newer methods. Use lowest compatible interop."),
             ("Recursive component traversal?", D("""\
                 void Traverse(Component2 c, int d) { Debug.WriteLine(new string(' ',d*2)+c.Name2);
-                    object[] ch = (object[])c.GetChildren(); if (ch == null) return;
-                    foreach (Component2 x in ch) Traverse(x, d+1); }
-                // Traverse(assyDoc.GetRootComponent3(true,false), 0);""")),
+                    object[] ch=(object[])c.GetChildren(); if (ch==null) return;
+                    foreach (Component2 x in ch) Traverse(x,d+1); }""")),
             ("Thread safety with SolidWorks COM?",
              "SolidWorks COM is STA. API calls MUST be on main thread. Background work: collect data off-thread, Invoke to marshal back. Never cache COM refs across threads."),
-            ("Compare two bodies for equality?", D("""\
-                // Use Operations2 with swBodyOperationINTERSECT; compare intersection volume to originals.
-                int[] retStatus; body1.Operations2((int)swBodyOperationType_e.swBodyOperationINTERSECT,
-                    body2, out retStatus);""")),
-            ("Suppress prompts during batch ops?", D("""\
-                swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swLockReferences, false);
-                // Use swOpenDocOptions_Silent | swOpenDocOptions_ReadOnly for opens.""")),
+            ("Compare two bodies for equality?",
+             "Use Operations2 with swBodyOperationINTERSECT; compare intersection volume to originals. int[] st; body1.Operations2((int)swBodyOperationType_e.swBodyOperationINTERSECT, body2, out st);"),
+            ("Suppress prompts during batch ops?",
+             "swApp.SetUserPreferenceToggle((int)swUserPreferenceToggle_e.swLockReferences, false);\n// Use swOpenDocOptions_Silent | swOpenDocOptions_ReadOnly for opens."),
             ("Detect if sketch is fully constrained?", D("""\
-                Sketch sk = modelDoc.GetActiveSketch2();
-                if (sk != null) { int s = (int)sk.GetSolveStatus();
-                    Debug.WriteLine(s==0?"[OK] Fully defined":s==1?"[WARN] Under":"[FAIL] Over"); }""")),
+                Sketch sk = modelDoc.GetActiveSketch2(); if (sk!=null) { int s=(int)sk.GetSolveStatus();
+                    Debug.WriteLine(s==0?"[OK] Defined":s==1?"[WARN] Under":"[FAIL] Over"); }""")),
             ("Export BOM from assembly?", D("""\
-                TableAnnotation bom = (TableAnnotation)view.InsertBomTable4(true, 0, 0,
-                    (int)swBomType_e.swBomType_TopLevelOnly, "",
+                TableAnnotation bom = (TableAnnotation)view.InsertBomTable4(true,0,0,
+                    (int)swBomType_e.swBomType_TopLevelOnly,"",
                     (int)swBOMConfigurationAnchorType_e.swBOMConfigurationAnchor_TopLeft,
-                    (int)swNumberingType_e.swNumberingType_Detailed, false);
-                if (bom != null) Debug.WriteLine("[OK] BOM rows: "+bom.RowCount);""")),
+                    (int)swNumberingType_e.swNumberingType_Detailed,false);
+                if (bom!=null) Debug.WriteLine("[OK] BOM rows: "+bom.RowCount);""")),
         ]
 
-
 class AdvancedTrainingGenerator:
-    """Top-level generator combining error-handling and conceptual pairs (~200 total).
-
-    Usage::
-        gen = AdvancedTrainingGenerator()
-        pairs = gen.generate_all()
-    """
+    """Top-level: ~200 pairs combining error-handling and conceptual."""
     def __init__(self) -> None:
-        self._err = ErrorHandlingGenerator()
-        self._con = ConceptualGenerator()
-
+        self._err, self._con = ErrorHandlingGenerator(), ConceptualGenerator()
     def generate_all(self) -> List[TrainingPair]:
-        """Return all advanced training pairs."""
         return self._err.generate_all() + self._con.generate_all()
