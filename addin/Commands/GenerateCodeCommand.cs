@@ -5,7 +5,6 @@
 
 using System;
 using System.Drawing;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using SolidWorksSemanticEngine.Bridge;
 using SolidWorksSemanticEngine.Models;
@@ -37,16 +36,38 @@ namespace SolidWorksSemanticEngine.Commands
         private readonly ApiClient _apiClient;
         private readonly SolidWorksContextService _contextService;
 
-        // ----- Constructor -------------------------------------------------
+        // ----- Domain helper class -----------------------------------------
 
         /// <summary>
-        /// Creates the Generate Code dialog.
+        /// Maps display name (shown in combo) to wire value (sent to backend).
         /// </summary>
-        /// <param name="apiClient">Backend HTTP client.</param>
-        /// <param name="contextService">
-        /// Service for extracting active-document context (may be null in
-        /// standalone testing).
-        /// </param>
+        private class DomainItem
+        {
+            public string DisplayName { get; }
+            public string WireValue { get; }
+
+            public DomainItem(string displayName, string wireValue)
+            {
+                DisplayName = displayName;
+                WireValue = wireValue;
+            }
+
+            public override string ToString()
+            {
+                return DisplayName;
+            }
+        }
+
+        private static readonly DomainItem[] Domains = new DomainItem[]
+        {
+            new DomainItem("API (General)", "api"),
+            new DomainItem("Sketch", "sketch"),
+            new DomainItem("Feature", "feature"),
+            new DomainItem("GD&T", "gdt")
+        };
+
+        // ----- Constructor -------------------------------------------------
+
         public GenerateCodeCommand(ApiClient apiClient, SolidWorksContextService contextService)
         {
             _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
@@ -77,7 +98,7 @@ namespace SolidWorksSemanticEngine.Commands
                 Size = new Size(160, 24),
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            _cboDomain.Items.AddRange(new object[] { "General", "Part", "Assembly", "Drawing" });
+            _cboDomain.Items.AddRange(Domains);
             _cboDomain.SelectedIndex = 0;
 
             // -- Include comments checkbox --
@@ -130,10 +151,6 @@ namespace SolidWorksSemanticEngine.Commands
 
         // ----- Event Handlers ----------------------------------------------
 
-        /// <summary>
-        /// Handles the Generate button click. Sends the prompt to the backend
-        /// and displays the resulting code.
-        /// </summary>
         private async void BtnGenerate_Click(object sender, EventArgs e)
         {
             string prompt = _txtPrompt.Text.Trim();
@@ -148,18 +165,22 @@ namespace SolidWorksSemanticEngine.Commands
             _lblStatus.Text = "Generating...";
             _rtbCode.Clear();
 
-            // Gather context from the active SolidWorks document if available
+            // Gather full context from the active SolidWorks document
             string context = string.Empty;
             if (_contextService != null)
             {
-                context = _contextService.GetActiveDocumentInfo();
+                context = _contextService.BuildFullContext();
             }
+
+            // Get the wire value from the selected domain item
+            DomainItem selectedDomain = _cboDomain.SelectedItem as DomainItem;
+            string wireValue = selectedDomain != null ? selectedDomain.WireValue : "api";
 
             var request = new CodeGenerationRequest
             {
                 Prompt = prompt,
                 Context = context,
-                Domain = _cboDomain.SelectedItem?.ToString() ?? "General",
+                Domain = wireValue,
                 IncludeComments = _chkComments.Checked
             };
 
@@ -167,7 +188,30 @@ namespace SolidWorksSemanticEngine.Commands
 
             if (response != null)
             {
+                // Display the generated code
                 _rtbCode.Text = response.Code ?? "(no code returned)";
+
+                // Append explanation as comments
+                if (!string.IsNullOrEmpty(response.Explanation))
+                {
+                    _rtbCode.AppendText("\n\n// --- Explanation ---\n");
+                    foreach (string line in response.Explanation.Split('\n'))
+                    {
+                        _rtbCode.AppendText("// " + line.TrimEnd() + "\n");
+                    }
+                }
+
+                // Append warnings with [WARN] markers
+                if (response.Warnings != null && response.Warnings.Count > 0)
+                {
+                    _rtbCode.AppendText("\n// --- Warnings ---\n");
+                    foreach (string warning in response.Warnings)
+                    {
+                        _rtbCode.AppendText("// [WARN] " + warning + "\n");
+                    }
+                }
+
+                // Show confidence in status
                 _lblStatus.Text = string.Format(
                     "Done  [->]  Confidence: {0:P0}",
                     response.Confidence);
@@ -175,7 +219,9 @@ namespace SolidWorksSemanticEngine.Commands
             else
             {
                 _rtbCode.Text = "[FAIL] Unable to reach the backend API.\n"
-                              + "Make sure the server is running at http://localhost:8000";
+                              + "The add-in auto-launches the backend on startup.\n"
+                              + "If this persists, check that swse-config.json is correct\n"
+                              + "and that port 8000+ is not blocked by another service.";
                 _lblStatus.Text = "Error - backend unreachable.";
             }
 

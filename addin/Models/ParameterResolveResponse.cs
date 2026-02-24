@@ -20,18 +20,17 @@ namespace SolidWorksSemanticEngine.Models
         public string GeneratedCode { get; set; }
 
         /// <summary>
-        /// Dictionary mapping parameter names to their resolved or suggested
-        /// values (e.g. <c>{ "length": "0.05", "width": "0.03" }</c>).
+        /// Name of the parameter space that was resolved.
         /// </summary>
         [JsonProperty("parameter_space")]
-        public Dictionary<string, string> ParameterSpace { get; set; }
+        public string ParameterSpace { get; set; }
 
         /// <summary>
-        /// Mapping of each SolidWorks API enum / constant assignment used
-        /// (e.g. <c>{ "swEndCondition": "swEndCondBlind" }</c>).
+        /// Final parameter assignments including defaults
+        /// (e.g. <c>{ "depth_mm": 15.0, "direction": "single" }</c>).
         /// </summary>
         [JsonProperty("assignments_used")]
-        public Dictionary<string, string> AssignmentsUsed { get; set; }
+        public Dictionary<string, object> AssignmentsUsed { get; set; }
 
         /// <summary>
         /// List of validation errors or warnings encountered during

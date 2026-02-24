@@ -22,11 +22,11 @@ namespace SolidWorksSemanticEngine.Models
         public string Explanation { get; set; }
 
         /// <summary>
-        /// List of SolidWorks API parameters that were resolved and used in
+        /// List of parameter dictionaries that were resolved and used in
         /// the generated code.
         /// </summary>
         [JsonProperty("parameters_used")]
-        public List<string> ParametersUsed { get; set; }
+        public List<Dictionary<string, object>> ParametersUsed { get; set; }
 
         /// <summary>
         /// Confidence score (0.0 - 1.0) indicating how reliable the
