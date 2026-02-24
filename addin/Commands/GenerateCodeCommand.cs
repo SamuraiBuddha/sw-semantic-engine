@@ -219,7 +219,9 @@ namespace SolidWorksSemanticEngine.Commands
             else
             {
                 _rtbCode.Text = "[FAIL] Unable to reach the backend API.\n"
-                              + "Make sure the server is running at http://localhost:8000";
+                              + "The add-in auto-launches the backend on startup.\n"
+                              + "If this persists, check that swse-config.json is correct\n"
+                              + "and that port 8000+ is not blocked by another service.";
                 _lblStatus.Text = "Error - backend unreachable.";
             }
 

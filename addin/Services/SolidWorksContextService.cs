@@ -220,14 +220,34 @@ namespace SolidWorksSemanticEngine.Services
                         DisplayDimension dispDim = feat.GetFirstDisplayDimension() as DisplayDimension;
                         while (dispDim != null)
                         {
-                            Dimension dim = dispDim.GetDimension() as Dimension;
-                            if (dim != null)
+                            try
                             {
-                                dimCount++;
-                                double val = (double)dim.GetSystemValue3(
-                                    (int)swInConfigurationOpts_e.swThisConfiguration, null);
-                                sb.AppendFormat("  {0}@{1} = {2:F6} m",
-                                    dim.FullName, feat.Name, val).AppendLine();
+                                Dimension dim = dispDim.GetDimension() as Dimension;
+                                if (dim != null)
+                                {
+                                    dimCount++;
+                                    object rawVal = dim.GetSystemValue3(
+                                        (int)swInConfigurationOpts_e.swThisConfiguration, null);
+
+                                    double val = 0;
+                                    if (rawVal is double)
+                                    {
+                                        val = (double)rawVal;
+                                    }
+                                    else if (rawVal is double[])
+                                    {
+                                        double[] arr = (double[])rawVal;
+                                        if (arr.Length > 0)
+                                            val = arr[0];
+                                    }
+
+                                    sb.AppendFormat("  {0}@{1} = {2:F6} m",
+                                        dim.FullName, feat.Name, val).AppendLine();
+                                }
+                            }
+                            catch (Exception)
+                            {
+                                // Skip dimensions that cannot be read
                             }
 
                             dispDim = feat.GetNextDisplayDimension(dispDim) as DisplayDimension;
@@ -245,6 +265,10 @@ namespace SolidWorksSemanticEngine.Services
             catch (COMException ex)
             {
                 return "[FAIL] COM error reading dimensions: " + ex.Message;
+            }
+            catch (Exception ex)
+            {
+                return "[FAIL] Error reading dimensions: " + ex.Message;
             }
         }
 
