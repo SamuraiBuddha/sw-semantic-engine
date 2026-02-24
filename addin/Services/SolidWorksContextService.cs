@@ -224,7 +224,7 @@ namespace SolidWorksSemanticEngine.Services
                             if (dim != null)
                             {
                                 dimCount++;
-                                double val = dim.GetSystemValue3(
+                                double val = (double)dim.GetSystemValue3(
                                     (int)swInConfigurationOpts_e.swThisConfiguration, null);
                                 sb.AppendFormat("  {0}@{1} = {2:F6} m",
                                     dim.FullName, feat.Name, val).AppendLine();
@@ -386,12 +386,8 @@ namespace SolidWorksSemanticEngine.Services
                 object[] points = sketch.GetSketchPoints2() as object[];
                 sb.AppendFormat("  Points: {0}", points != null ? points.Length : 0).AppendLine();
 
-                // Relations
-                object[] relations = sketch.GetSketchRelations() as object[];
-                if (relations != null && relations.Length > 0)
-                {
-                    sb.AppendFormat("  Relations: {0}", relations.Length).AppendLine();
-                }
+                // Note: sketch relation enumeration requires SketchRelationManager
+                // which is accessed via ISketch.RelationManager; left as future enhancement
 
                 return sb.ToString();
             }
@@ -565,8 +561,7 @@ namespace SolidWorksSemanticEngine.Services
                         Curve curve = edge.GetCurve() as Curve;
                         if (curve != null)
                         {
-                            bool isClosed = curve.IsClosed();
-                            sb.AppendFormat(", closed={0}", isClosed);
+                            sb.AppendFormat(", curve-type={0}", curve.Identity());
                         }
                     }
                 }
@@ -599,7 +594,7 @@ namespace SolidWorksSemanticEngine.Services
                 case (int)swSelectType_e.swSelDATUMAXES:   return "Datum Axis";
                 case (int)swSelectType_e.swSelSKETCHES:    return "Sketch";
                 case (int)swSelectType_e.swSelCOMPONENTS:  return "Component";
-                case (int)swSelectType_e.swSelBODIES:      return "Body";
+                case (int)swSelectType_e.swSelSOLIDBODIES:  return "Body";
                 case (int)swSelectType_e.swSelDIMENSIONS:  return "Dimension";
                 case (int)swSelectType_e.swSelSKETCHPOINTS: return "Sketch Point";
                 case (int)swSelectType_e.swSelSKETCHSEGS:  return "Sketch Segment";

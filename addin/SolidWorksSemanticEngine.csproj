@@ -13,12 +13,14 @@
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <RuntimeIdentifier>win</RuntimeIdentifier>
   </PropertyGroup>
 
   <PropertyGroup>
     <!-- COM visibility for SolidWorks add-in registration -->
     <ComVisible>true</ComVisible>
-    <RegisterForComInterop>true</RegisterForComInterop>
+    <!-- Register manually with: regasm /codebase bin\Release\SolidWorksSemanticEngine.dll -->
+    <RegisterForComInterop>false</RegisterForComInterop>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -81,6 +83,8 @@
     <Compile Include="Commands\ParametrizeCommand.cs" />
     <Compile Include="Commands\ExplainApiCommand.cs" />
     <Compile Include="Models\ParameterResolveRequest.cs" />
+    <Compile Include="Models\SwseConfig.cs" />
+    <Compile Include="Services\BackendLauncher.cs" />
     <Compile Include="Services\SolidWorksContextService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
