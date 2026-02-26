@@ -207,7 +207,7 @@ class TrainingPipeline:
         all_pairs: list[tuple[str, str]] = []
 
         # ---- Stage 1: SolidWorks API training data ---------------------
-        print("\n[->] Stage 1/7: Generating SolidWorks API training data...")
+        print("\n[->] Stage 1/15: Generating SolidWorks API training data...")
         try:
             api_pairs = self.generate_api_training_data()
             self.counts["solidworks_api"] = len(api_pairs)
@@ -220,7 +220,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 2: GD&T training data -------------------------------
-        print("\n[->] Stage 2/7: Generating GD&T training data...")
+        print("\n[->] Stage 2/15: Generating GD&T training data...")
         try:
             gdt_pairs = self.generate_gdt_training_data()
             self.counts["gdt"] = len(gdt_pairs)
@@ -233,7 +233,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 3: Sketch constraint training data ------------------
-        print("\n[->] Stage 3/7: Generating sketch constraint training data...")
+        print("\n[->] Stage 3/15: Generating sketch constraint training data...")
         try:
             sketch_pairs = self.generate_sketch_training_data()
             self.counts["sketch"] = len(sketch_pairs)
@@ -246,7 +246,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 4: Combined multi-step training data ----------------
-        print("\n[->] Stage 4/7: Generating combined multi-step training data...")
+        print("\n[->] Stage 4/15: Generating combined multi-step training data...")
         try:
             combined_pairs = self.generate_combined_training_data()
             self.counts["combined"] = len(combined_pairs)
@@ -259,7 +259,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 5: Feature code training data -------------------------
-        print("\n[->] Stage 5/7: Generating feature code training data...")
+        print("\n[->] Stage 5/15: Generating feature code training data...")
         try:
             feature_pairs = self.generate_feature_training_data()
             self.counts["feature_code"] = len(feature_pairs)
@@ -272,7 +272,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 6: Drawing & configuration training data --------------
-        print("\n[->] Stage 6/7: Generating drawing & configuration training data...")
+        print("\n[->] Stage 6/15: Generating drawing & configuration training data...")
         try:
             drawing_config_pairs = self.generate_drawing_config_training_data()
             self.counts["drawing_config"] = len(drawing_config_pairs)
@@ -285,7 +285,7 @@ class TrainingPipeline:
                 traceback.print_exc()
 
         # ---- Stage 7: Advanced training data -----------------------------
-        print("\n[->] Stage 7/7: Generating advanced training data...")
+        print("\n[->] Stage 7/15: Generating advanced training data...")
         try:
             advanced_pairs = self.generate_advanced_training_data()
             self.counts["advanced"] = len(advanced_pairs)
@@ -294,6 +294,110 @@ class TrainingPipeline:
         except Exception as exc:
             self.counts["advanced"] = 0
             print(f"  [FAIL] Advanced data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 8: Assembly mates training data -----------------------
+        print("\n[->] Stage 8/15: Generating assembly mates training data...")
+        try:
+            mates_pairs = self.generate_assembly_mates_training_data()
+            self.counts["assembly_mates"] = len(mates_pairs)
+            all_pairs.extend(mates_pairs)
+            print(f"  [OK] Generated {len(mates_pairs)} assembly mates training pairs")
+        except Exception as exc:
+            self.counts["assembly_mates"] = 0
+            print(f"  [FAIL] Assembly mates data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 9: Fastener training data -----------------------------
+        print("\n[->] Stage 9/15: Generating fastener training data...")
+        try:
+            fastener_pairs = self.generate_fastener_training_data()
+            self.counts["fasteners"] = len(fastener_pairs)
+            all_pairs.extend(fastener_pairs)
+            print(f"  [OK] Generated {len(fastener_pairs)} fastener training pairs")
+        except Exception as exc:
+            self.counts["fasteners"] = 0
+            print(f"  [FAIL] Fastener data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 10: Shaft & power transmission training data ----------
+        print("\n[->] Stage 10/15: Generating shaft & power transmission training data...")
+        try:
+            shaft_pairs = self.generate_shaft_power_training_data()
+            self.counts["shaft_power_trans"] = len(shaft_pairs)
+            all_pairs.extend(shaft_pairs)
+            print(f"  [OK] Generated {len(shaft_pairs)} shaft/power transmission training pairs")
+        except Exception as exc:
+            self.counts["shaft_power_trans"] = 0
+            print(f"  [FAIL] Shaft/power transmission data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 11: BOM & properties training data --------------------
+        print("\n[->] Stage 11/15: Generating BOM & properties training data...")
+        try:
+            bom_pairs = self.generate_bom_properties_training_data()
+            self.counts["bom_properties"] = len(bom_pairs)
+            all_pairs.extend(bom_pairs)
+            print(f"  [OK] Generated {len(bom_pairs)} BOM/properties training pairs")
+        except Exception as exc:
+            self.counts["bom_properties"] = 0
+            print(f"  [FAIL] BOM/properties data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 12: Interference & clearance training data ------------
+        print("\n[->] Stage 12/15: Generating interference & clearance training data...")
+        try:
+            intf_pairs = self.generate_interference_training_data()
+            self.counts["interference_clearance"] = len(intf_pairs)
+            all_pairs.extend(intf_pairs)
+            print(f"  [OK] Generated {len(intf_pairs)} interference/clearance training pairs")
+        except Exception as exc:
+            self.counts["interference_clearance"] = 0
+            print(f"  [FAIL] Interference/clearance data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 13: Motion study training data ------------------------
+        print("\n[->] Stage 13/15: Generating motion study training data...")
+        try:
+            motion_pairs = self.generate_motion_study_training_data()
+            self.counts["motion_study"] = len(motion_pairs)
+            all_pairs.extend(motion_pairs)
+            print(f"  [OK] Generated {len(motion_pairs)} motion study training pairs")
+        except Exception as exc:
+            self.counts["motion_study"] = 0
+            print(f"  [FAIL] Motion study data generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 14: Expanded scenarios --------------------------------
+        print("\n[->] Stage 14/15: Generating expanded scenario training data...")
+        try:
+            scenario_pairs = self.generate_expanded_scenarios_training_data()
+            self.counts["expanded_scenarios"] = len(scenario_pairs)
+            all_pairs.extend(scenario_pairs)
+            print(f"  [OK] Generated {len(scenario_pairs)} expanded scenario training pairs")
+        except Exception as exc:
+            self.counts["expanded_scenarios"] = 0
+            print(f"  [FAIL] Expanded scenarios generation failed: {exc}")
+            if self.verbose:
+                traceback.print_exc()
+
+        # ---- Stage 15: Expanded API coverage -----------------------------
+        print("\n[->] Stage 15/15: Generating expanded API coverage training data...")
+        try:
+            api_cov_pairs = self.generate_expanded_api_coverage_training_data()
+            self.counts["expanded_api_coverage"] = len(api_cov_pairs)
+            all_pairs.extend(api_cov_pairs)
+            print(f"  [OK] Generated {len(api_cov_pairs)} expanded API coverage training pairs")
+        except Exception as exc:
+            self.counts["expanded_api_coverage"] = 0
+            print(f"  [FAIL] Expanded API coverage generation failed: {exc}")
             if self.verbose:
                 traceback.print_exc()
 
@@ -1227,6 +1331,102 @@ class TrainingPipeline:
         return pairs
 
     # ------------------------------------------------------------------
+    # Stage 14: Expanded scenarios
+    # ------------------------------------------------------------------
+
+    def generate_expanded_scenarios_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.expanded_scenarios_generator import ExpandedScenariosGenerator
+        generator = ExpandedScenariosGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] ExpandedScenariosGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 15: Expanded API coverage
+    # ------------------------------------------------------------------
+
+    def generate_expanded_api_coverage_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.expanded_api_coverage_generator import ExpandedAPICoverageGenerator
+        generator = ExpandedAPICoverageGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] ExpandedAPICoverageGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 8: Assembly mates
+    # ------------------------------------------------------------------
+
+    def generate_assembly_mates_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.assembly_mates_generator import AssemblyMatesGenerator
+        generator = AssemblyMatesGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] AssemblyMatesGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 9: Fasteners
+    # ------------------------------------------------------------------
+
+    def generate_fastener_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.fastener_generator import FastenerGenerator
+        generator = FastenerGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] FastenerGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 10: Shaft & power transmission
+    # ------------------------------------------------------------------
+
+    def generate_shaft_power_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.shaft_power_transmission_generator import ShaftPowerTransmissionGenerator
+        generator = ShaftPowerTransmissionGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] ShaftPowerTransmissionGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 11: BOM & properties
+    # ------------------------------------------------------------------
+
+    def generate_bom_properties_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.bom_properties_generator import BomPropertiesGenerator
+        generator = BomPropertiesGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] BomPropertiesGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 12: Interference & clearance
+    # ------------------------------------------------------------------
+
+    def generate_interference_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.interference_clearance_generator import InterferenceClearanceGenerator
+        generator = InterferenceClearanceGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] InterferenceClearanceGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
+    # Stage 13: Motion study
+    # ------------------------------------------------------------------
+
+    def generate_motion_study_training_data(self) -> list[tuple[str, str]]:
+        from training_pipeline.generators.motion_study_generator import MotionStudyGenerator
+        generator = MotionStudyGenerator()
+        pairs = generator.generate_all()
+        if self.verbose:
+            print(f"    [->] MotionStudyGenerator produced {len(pairs)} pairs")
+        return pairs
+
+    # ------------------------------------------------------------------
     # Export
     # ------------------------------------------------------------------
 
@@ -1277,12 +1477,12 @@ class TrainingPipeline:
         print(f"  {'TOTAL':<30} {len(pairs):>10}")
         print("=" * 70)
 
-        if len(pairs) >= 2000:
-            print(f"  [OK] Target of 2000+ pairs reached ({len(pairs)} pairs)")
+        if len(pairs) >= 4000:
+            print(f"  [OK] Target of 4000+ pairs reached ({len(pairs)} pairs)")
         else:
             print(
-                f"  [!] Below target of 2000 pairs "
-                f"({len(pairs)} generated, need {2000 - len(pairs)} more)"
+                f"  [!] Below target of 4000 pairs "
+                f"({len(pairs)} generated, need {4000 - len(pairs)} more)"
             )
         print()
 
