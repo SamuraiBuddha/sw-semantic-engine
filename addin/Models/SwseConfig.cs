@@ -72,5 +72,12 @@ namespace SolidWorksSemanticEngine.Models
         /// </summary>
         [JsonProperty("startupTimeoutMs")]
         public int StartupTimeoutMs { get; set; } = 15000;
+
+        /// <summary>
+        /// The Ollama model name to use for code generation.
+        /// Defaults to <c>sw-semantic-7b</c>.
+        /// </summary>
+        [JsonProperty("activeModel")]
+        public string ActiveModel { get; set; } = "sw-semantic-7b";
     }
 }

@@ -82,9 +82,11 @@
     <Compile Include="Commands\GenerateCodeCommand.cs" />
     <Compile Include="Commands\ParametrizeCommand.cs" />
     <Compile Include="Commands\ExplainApiCommand.cs" />
+    <Compile Include="Commands\SettingsCommand.cs" />
     <Compile Include="Models\ParameterResolveRequest.cs" />
     <Compile Include="Models\SwseConfig.cs" />
     <Compile Include="Services\BackendLauncher.cs" />
+    <Compile Include="Services\OllamaService.cs" />
     <Compile Include="Services\SolidWorksContextService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -93,6 +95,9 @@
     <None Include="SolidWorksSemanticEngine.addin">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <Content Include="Config\swse-model-catalog.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

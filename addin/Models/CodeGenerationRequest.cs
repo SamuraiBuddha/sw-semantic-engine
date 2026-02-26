@@ -35,5 +35,12 @@ namespace SolidWorksSemanticEngine.Models
         /// </summary>
         [JsonProperty("include_comments")]
         public bool IncludeComments { get; set; } = true;
+
+        /// <summary>
+        /// Optional model name override. When set, the backend uses this model
+        /// instead of the default configured model.
+        /// </summary>
+        [JsonProperty("model")]
+        public string Model { get; set; }
     }
 }

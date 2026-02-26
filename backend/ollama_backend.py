@@ -94,6 +94,9 @@ class OllamaBackend:
         Raises:
             httpx.HTTPStatusError: If Ollama returns a non-2xx status.
         """
+        # Use per-request model override if provided, otherwise fall back to default
+        model = request.model or self.model_name
+
         system_prompt = self._build_system_prompt(request.domain)
 
         user_message = request.prompt
@@ -103,7 +106,7 @@ class OllamaBackend:
             user_message += "\n\nInclude descriptive inline comments in the code."
 
         payload: dict[str, Any] = {
-            "model": self.model_name,
+            "model": model,
             "prompt": user_message,
             "system": system_prompt,
             "stream": False,

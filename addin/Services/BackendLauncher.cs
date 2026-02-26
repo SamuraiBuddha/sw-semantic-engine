@@ -6,6 +6,7 @@
 // ---------------------------------------------------------------------------
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
@@ -200,7 +201,12 @@ namespace SolidWorksSemanticEngine.Services
                 launchPort);
 
             Log("Launching backend on port " + launchPort + "...");
-            _backendProcess = StartHidden(pythonExe, args, _config.ProjectRoot);
+            var backendEnv = new Dictionary<string, string>
+            {
+                { "SWSE_MODEL", _config.ActiveModel ?? "sw-semantic-7b" },
+                { "SWSE_OLLAMA_URL", "http://localhost:" + ActualOllamaPort }
+            };
+            _backendProcess = StartHidden(pythonExe, args, _config.ProjectRoot, backendEnv);
 
             bool ok = await PollUntilFingerprintMatch(
                 "http://localhost:" + launchPort + "/",
@@ -377,6 +383,20 @@ namespace SolidWorksSemanticEngine.Services
             string fileName, string arguments, string workingDirectory,
             string envKey = null, string envValue = null)
         {
+            var envVars = new Dictionary<string, string>();
+            if (!string.IsNullOrEmpty(envKey))
+                envVars[envKey] = envValue;
+            return StartHidden(fileName, arguments, workingDirectory, envVars);
+        }
+
+        /// <summary>
+        /// Starts a process with no visible window. Sets multiple
+        /// environment variables from the provided dictionary.
+        /// </summary>
+        private static Process StartHidden(
+            string fileName, string arguments, string workingDirectory,
+            Dictionary<string, string> envVars)
+        {
             var psi = new ProcessStartInfo
             {
                 FileName = fileName,
@@ -388,9 +408,12 @@ namespace SolidWorksSemanticEngine.Services
                 RedirectStandardError = true
             };
 
-            if (!string.IsNullOrEmpty(envKey))
+            if (envVars != null)
             {
-                psi.EnvironmentVariables[envKey] = envValue;
+                foreach (var kvp in envVars)
+                {
+                    psi.EnvironmentVariables[kvp.Key] = kvp.Value;
+                }
             }
 
             var proc = new Process { StartInfo = psi };

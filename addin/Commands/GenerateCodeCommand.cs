@@ -35,6 +35,7 @@ namespace SolidWorksSemanticEngine.Commands
 
         private readonly ApiClient _apiClient;
         private readonly SolidWorksContextService _contextService;
+        private readonly SwseConfig _config;
 
         // ----- Domain helper class -----------------------------------------
 
@@ -68,10 +69,11 @@ namespace SolidWorksSemanticEngine.Commands
 
         // ----- Constructor -------------------------------------------------
 
-        public GenerateCodeCommand(ApiClient apiClient, SolidWorksContextService contextService)
+        public GenerateCodeCommand(ApiClient apiClient, SolidWorksContextService contextService, SwseConfig config = null)
         {
             _apiClient = apiClient ?? throw new ArgumentNullException(nameof(apiClient));
             _contextService = contextService;
+            _config = config;
 
             // -- Form properties --
             Text = "Semantic Engine - Generate Code";
@@ -181,7 +183,8 @@ namespace SolidWorksSemanticEngine.Commands
                 Prompt = prompt,
                 Context = context,
                 Domain = wireValue,
-                IncludeComments = _chkComments.Checked
+                IncludeComments = _chkComments.Checked,
+                Model = _config?.ActiveModel
             };
 
             CodeGenerationResponse response = await _apiClient.GenerateCodeAsync(request);

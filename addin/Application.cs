@@ -39,6 +39,7 @@ namespace SolidWorksSemanticEngine
         private const int CmdIdGenerateCode = 0;
         private const int CmdIdParametrize  = 1;
         private const int CmdIdExplainApi   = 2;
+        private const int CmdIdSettings     = 3;
 
         // ----- Fields ------------------------------------------------------
 
@@ -148,7 +149,7 @@ namespace SolidWorksSemanticEngine
 
             // Check whether our command group already exists and whether
             // its command list has changed since the last registration.
-            int[] registeredIds = new int[] { CmdIdGenerateCode, CmdIdParametrize, CmdIdExplainApi };
+            int[] registeredIds = new int[] { CmdIdGenerateCode, CmdIdParametrize, CmdIdExplainApi, CmdIdSettings };
             bool ignorePrevious = false;
 
             object registryIDs;
@@ -167,8 +168,8 @@ namespace SolidWorksSemanticEngine
             string largeIconPath = Path.Combine(iconDir, "swse_icons_32.bmp");
             string smallMainPath = Path.Combine(iconDir, "swse_main_20.bmp");
             string largeMainPath = Path.Combine(iconDir, "swse_main_32.bmp");
-            EnsureIconFiles(smallIconPath, 20, 3);
-            EnsureIconFiles(largeIconPath, 32, 3);
+            EnsureIconFiles(smallIconPath, 20, 4);
+            EnsureIconFiles(largeIconPath, 32, 4);
             EnsureIconFiles(smallMainPath, 20, 1);
             EnsureIconFiles(largeMainPath, 32, 1);
 
@@ -201,6 +202,11 @@ namespace SolidWorksSemanticEngine
                 "Explain API", -1, "Look up SolidWorks API reference documentation",
                 "Explain API", 2, nameof(OnExplainApi), nameof(EnableMethod),
                 CmdIdExplainApi, (int)swCommandItemType_e.swMenuItem | (int)swCommandItemType_e.swToolbarItem);
+
+            int cmdIndex3 = cmdGroup.AddCommandItem2(
+                "Settings", -1, "Configure the Semantic Engine (model, ports, etc.)",
+                "Settings", 3, nameof(OnSettings), nameof(EnableMethod),
+                CmdIdSettings, (int)swCommandItemType_e.swMenuItem | (int)swCommandItemType_e.swToolbarItem);
 
             cmdGroup.HasToolbar = true;
             cmdGroup.HasMenu = true;
@@ -238,10 +244,12 @@ namespace SolidWorksSemanticEngine
                 {
                     cmdGroup.CommandID[cmdIndex0],
                     cmdGroup.CommandID[cmdIndex1],
-                    cmdGroup.CommandID[cmdIndex2]
+                    cmdGroup.CommandID[cmdIndex2],
+                    cmdGroup.CommandID[cmdIndex3]
                 };
                 int[] textTypes = new int[]
                 {
+                    (int)swCommandTabButtonTextDisplay_e.swCommandTabButton_TextBelow,
                     (int)swCommandTabButtonTextDisplay_e.swCommandTabButton_TextBelow,
                     (int)swCommandTabButtonTextDisplay_e.swCommandTabButton_TextBelow,
                     (int)swCommandTabButtonTextDisplay_e.swCommandTabButton_TextBelow
@@ -288,9 +296,10 @@ namespace SolidWorksSemanticEngine
                     // Distinct colors per command slot
                     Color[] colors = new Color[]
                     {
-                        Color.FromArgb(0x33, 0x99, 0xFF),   // blue  - Generate
+                        Color.FromArgb(0x33, 0x99, 0xFF),   // blue   - Generate
                         Color.FromArgb(0xFF, 0x99, 0x33),   // orange - Parametrize
-                        Color.FromArgb(0x33, 0xCC, 0x66)    // green  - Explain
+                        Color.FromArgb(0x33, 0xCC, 0x66),   // green  - Explain
+                        Color.FromArgb(0x88, 0x88, 0x88)    // gray   - Settings
                     };
 
                     g.Clear(Color.White);
@@ -305,7 +314,7 @@ namespace SolidWorksSemanticEngine
                         }
 
                         // Draw a letter in the center
-                        string letter = i == 0 ? "G" : i == 1 ? "P" : "E";
+                        string letter = i == 0 ? "G" : i == 1 ? "P" : i == 2 ? "E" : "S";
                         using (var font = new Font("Arial", size * 0.35f, FontStyle.Bold))
                         using (var sf = new StringFormat())
                         {
@@ -331,7 +340,7 @@ namespace SolidWorksSemanticEngine
         /// <summary>Callback: opens the Generate Code dialog.</summary>
         public void OnGenerateCode()
         {
-            var form = new GenerateCodeCommand(ApiClient, ContextService);
+            var form = new GenerateCodeCommand(ApiClient, ContextService, _config);
             form.Show();
         }
 
@@ -347,6 +356,46 @@ namespace SolidWorksSemanticEngine
         {
             var form = new ExplainApiCommand(ApiClient, ContextService);
             form.Show();
+        }
+
+        /// <summary>Callback: opens the Settings dialog.</summary>
+        public void OnSettings()
+        {
+            var form = new SettingsCommand(_config, updatedConfig =>
+            {
+                // Apply updated config
+                _config = updatedConfig;
+
+                // Recreate ApiClient if port changed
+                int newPort = _config.BackendPort;
+                var oldClient = ApiClient;
+                ApiClient = new ApiClient("http://localhost:" + newPort);
+                oldClient?.Dispose();
+
+                System.Diagnostics.Debug.WriteLine(
+                    "[SWSE] Settings saved. Active model: " + _config.ActiveModel);
+
+                // Restart backend with new model if launcher exists
+                if (_launcher != null && _config.AutoLaunchBackend)
+                {
+                    _launcher.StopServices();
+                    _launcher.Dispose();
+                    _launcher = new BackendLauncher(_config);
+                    Task.Run(async () =>
+                    {
+                        await _launcher.EnsureServicesRunningAsync();
+
+                        int actualPort = _launcher.ActualBackendPort;
+                        if (actualPort != newPort)
+                        {
+                            var old = ApiClient;
+                            ApiClient = new ApiClient("http://localhost:" + actualPort);
+                            old?.Dispose();
+                        }
+                    });
+                }
+            });
+            form.ShowDialog();
         }
 
         /// <summary>Enable-method callback. Returns 1 (enabled) always.</summary>

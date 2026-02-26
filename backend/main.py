@@ -7,6 +7,7 @@ Start with:
 from __future__ import annotations
 
 import logging
+import os
 from contextlib import asynccontextmanager
 from typing import AsyncIterator
 
@@ -32,7 +33,9 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     """Manage startup / shutdown resources."""
 
     # -- Startup ----------------------------------------------------------
-    backend = OllamaBackend()
+    model = os.environ.get("SWSE_MODEL", "sw-semantic-7b")
+    ollama_url = os.environ.get("SWSE_OLLAMA_URL", "http://localhost:11434")
+    backend = OllamaBackend(model_name=model, base_url=ollama_url)
     app.state.ollama = backend
 
     available = await backend.check_availability()

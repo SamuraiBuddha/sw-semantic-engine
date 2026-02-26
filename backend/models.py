@@ -34,6 +34,10 @@ class CodeGenerationRequest(BaseModel):
         default=True,
         description="Whether the generated code should contain inline comments.",
     )
+    model: str | None = Field(
+        default=None,
+        description="Optional model name override. When set, uses this model instead of the server default.",
+    )
 
 
 class CodeGenerationResponse(BaseModel):
